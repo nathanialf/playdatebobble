@@ -1,0 +1,9 @@
+name=playdatebobble
+author=nathanialfine
+description=Making a test game
+bundleID=com.nathanialfine.playdatebobble
+version=0.0.1
+buildnumber=1
+imagePath=images
+pdxversion=11000
+buildtime=704341215

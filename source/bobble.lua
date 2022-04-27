@@ -24,6 +24,7 @@ function Bobble:create(type)
     bble.angle = 0
     bble.bobbleSprite = gfx.sprite.new( bobbleImage )
     bble.entity = kBobble
+    bble.isMoving = false
     
     bble.bobbleSprite:moveTo( 200, 120 )
     bble.bobbleSprite:add()
@@ -45,6 +46,7 @@ function Bobble:create(type, x, y, angle)
     bble.speedX = .1
     bble.speedY = .1
     bble.bobbleSprite.entity = kBobble
+    bble.isMoving = true
     
     bble.bobbleSprite:moveTo( x, y ) 
     bble.bobbleSprite:add()
@@ -61,25 +63,27 @@ function Bobble:getType()
 end
 
 function Bobble:move(deltaTime)
-    local velocX = -math.cos(math.rad(self.angle)) * self.speedX * deltaTime
-    local velocY = -math.sin(math.rad(self.angle)) * self.speedY * deltaTime
-    local spriteX, spriteY, spriteWidth, spriteHeight = self.bobbleSprite:getPosition()
-    local actualX, actualY, collisions, collisionCount = self.bobbleSprite:moveWithCollisions(spriteX + velocX, spriteY + velocY)
-
-    for i=1, collisionCount do
-        local collision = collisions[i]
-
-        if collision.other.entity == kBarrier and not collision.other.isSticky then
-            -- when a player or monster collides with anything just bounce off of it
-            if collision.normal.x ~= 0 then -- hit something in the X direction
-                self.speedX = -self.speedX
+    if self.isMoving then
+        local velocX = -math.cos(math.rad(self.angle)) * self.speedX * deltaTime
+        local velocY = -math.sin(math.rad(self.angle)) * self.speedY * deltaTime
+        local spriteX, spriteY, spriteWidth, spriteHeight = self.bobbleSprite:getPosition()
+        local actualX, actualY, collisions, collisionCount = self.bobbleSprite:moveWithCollisions(spriteX + velocX, spriteY + velocY)
+    
+        for i=1, collisionCount do
+            local collision = collisions[i]
+    
+            if collision.other.entity == kBarrier and not collision.other.isSticky then
+                -- when a player or monster collides with anything just bounce off of it
+                if collision.normal.x ~= 0 then -- hit something in the X direction
+                    self.speedX = -self.speedX
+                end
+                if collision.normal.y ~= 0 then -- hit something in the Y direction
+                    self.speedY = -self.speedY
+                end
+            else
+                self.isMoving = false
+                -- Check Collisions popping bobbles
             end
-            if collision.normal.y ~= 0 then -- hit something in the Y direction
-                self.speedY = -self.speedY
-            end
-        else
-            self.speedX = 0
-            self.speedY = 0
         end
     end
 end

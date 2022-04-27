@@ -135,7 +135,9 @@ function playdate.update()
 
     if playdate.buttonJustPressed(playdate.kButtonUp) then
         local num = #(bobbles) + 1
-        bobbles[num] = Bobble:create(math.random(1,3), 400, 120, arrowRotation)
+        if #(bobbles) == 0 or not bobbles[#(bobbles)].isMoving then
+            bobbles[num] = Bobble:create(math.random(1,3), 400, 120, arrowRotation)
+        end
     end
 
     -- Call the functions below in playdate.update() to draw sprites and keep

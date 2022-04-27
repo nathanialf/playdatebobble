@@ -11,6 +11,7 @@ import "CoreLibs/timer"
 import "CoreLibs/ui"
 
 import "bobble"
+import "barrier"
 
 -- Declaring this "gfx" shorthand will make your life easier. Instead of having
 -- to preface all graphics calls with "playdate.graphics", just use "gfx."
@@ -31,6 +32,7 @@ local double arrowUpLimit = 80
 local double arrowDownLimit = 280
 
 local bobbles = {}
+local barriers = {}
 
 -- A function to set up our game environment.
 
@@ -51,24 +53,11 @@ function myGameSetUp()
 
     local borderImage = gfx.image.new("images/border")
     assert( borderImage ) -- make sure the image was where we thought
-    
-    local borderSpriteTop = gfx.sprite.new( borderImage )
-    borderSpriteTop:moveTo( 200, 10 ) -- this is where the center of the sprite is placed; (200,120) is the center of the Playdate screen
-    borderSpriteTop:add()
-    borderSpriteTop:setCollideRect(0, 0, borderSpriteTop:getSize())
-    borderSpriteTop:setGroups(2);
-    borderSpriteTop.collisionResponse = gfx.sprite.kCollisionTypeBounce
-    
-    local borderSpriteBottom = gfx.sprite.new( borderImage )
-    borderSpriteBottom:moveTo( 200, 230 ) -- this is where the center of the sprite is placed; (200,120) is the center of the Playdate screen
-    borderSpriteBottom:add()
-    borderSpriteBottom:setCollideRect(0, 0, borderSpriteBottom:getSize())
-    borderSpriteBottom:setGroups(2);
-    borderSpriteBottom.collisionResponse = gfx.sprite.kCollisionTypeBounce
 
-    --bobbleTest1 = Bobble:create(1)
-    --bobbleTest2 = Bobble:create(2)
-    --bobbleTest3 = Bobble:create(3)
+    barriers[1] = Barrier:create(200, 10, true, false)
+    barriers[2] = Barrier:create(200, 230, true, false)
+    barriers[3] = Barrier:create(10, 120, false, true)
+    barriers[3] = Barrier:create(420, 120, false, false)
 
     -- We want an environment displayed behind our sprite.
     -- There are generally two ways to do this:
@@ -140,6 +129,7 @@ function playdate.update()
 
     for i=1,#(bobbles) 
     do
+        -- add a conditional for if the latest bobble is moving
         bobbles[i]:move(deltaTime)
     end
 
@@ -147,10 +137,6 @@ function playdate.update()
         local num = #(bobbles) + 1
         bobbles[num] = Bobble:create(math.random(1,3), 400, 120, arrowRotation)
     end
-
-    --if playdate.buttonIsPressed( playdate.kButtonUp ) then
-    --    playerSprite:moveBy( 0, -2 )
-    --end
 
     -- Call the functions below in playdate.update() to draw sprites and keep
     -- timers updated. (We aren't using timers in this example, but in most

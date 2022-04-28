@@ -17,3 +17,6 @@ TODO:
 - Have grouped up bobbles and their "children" drop off the screen
 - Set up some levels
 - Add some pictures/details in this README
+
+Current Progress Screenshot
+![4/27/2022 Screenshot](resource/screenshots/playdate-20220427-233610.png)

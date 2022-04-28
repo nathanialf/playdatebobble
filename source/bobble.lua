@@ -43,8 +43,8 @@ function Bobble:create(type, x, y, angle)
     bble.type = type
     bble.angle = angle
     bble.bobbleSprite = gfx.sprite.new( bobbleImage )
-    bble.speedX = .1
-    bble.speedY = .1
+    bble.speedX = .2
+    bble.speedY = .2
     bble.bobbleSprite.entity = kBobble
     bble.isMoving = true
     
@@ -82,7 +82,7 @@ function Bobble:move(deltaTime)
                 end
             else
                 self.isMoving = false
-                -- Check Collisions popping bobbles
+                -- Check Collisions ford popping bobbles
             end
         end
     end

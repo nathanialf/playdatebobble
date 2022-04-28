@@ -24,12 +24,15 @@ local gfx <const> = playdate.graphics
 -- several functions need to access it.
 
 local playerSprite = nil
+local previewSprite = nil
 
 local double arrowRotation = 0
 local boolean stopRotatingUp = false
 local boolean stopRotatingDown = false
 local double arrowUpLimit = 80
 local double arrowDownLimit = 280
+
+local integer nextBobble = 1
 
 local bobbles = {}
 local barriers = {}
@@ -39,6 +42,7 @@ local barriers = {}
 function myGameSetUp()
 
     math.randomseed(playdate.getSecondsSinceEpoch())
+    nextBobble = math.random(1,3)
 
     -- Set up the player sprite.
     -- The :setCenter() call specifies that the sprite will be anchored at its center.
@@ -50,6 +54,10 @@ function myGameSetUp()
     playerSprite = gfx.sprite.new( playerImage )
     playerSprite:moveTo( 400, 120 ) -- this is where the center of the sprite is placed; (200,120) is the center of the Playdate screen
     playerSprite:add() -- This is critical!
+
+    previewSprite = gfx.sprite.new( gfx.image.new("images/bobble" .. tostring(nextBobble)) )
+    previewSprite:moveTo( 400, 120 ) -- this is where the center of the sprite is placed; (200,120) is the center of the Playdate screen
+    previewSprite:add() -- This is critical!
 
     local borderImage = gfx.image.new("images/border")
     assert( borderImage ) -- make sure the image was where we thought
@@ -136,7 +144,13 @@ function playdate.update()
     if playdate.buttonJustPressed(playdate.kButtonUp) then
         local num = #(bobbles) + 1
         if #(bobbles) == 0 or not bobbles[#(bobbles)].isMoving then
-            bobbles[num] = Bobble:create(math.random(1,3), 400, 120, arrowRotation)
+            bobbles[num] = Bobble:create(nextBobble, 400, 120, arrowRotation)
+            nextBobble = math.random(1,3)
+            previewSprite:remove()
+            previewSprite = nil
+            previewSprite = gfx.sprite.new( gfx.image.new("images/bobble" .. tostring(nextBobble)) )
+            previewSprite:moveTo( 400, 120 )
+            previewSprite:add()
         end
     end
 

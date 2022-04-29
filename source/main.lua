@@ -26,22 +26,64 @@ local gfx <const> = playdate.graphics
 local playerSprite = nil
 local previewSprite = nil
 
+-- Current angle that the arrow is facing and that the bobble will be shot at
 local double arrowRotation = 0
+-- Prevents the arrow from rotating upwards after reaching the arrowUpLimit
 local boolean stopRotatingUp = false
+-- Prevents the arrow from rotating downwards after reaching the arrowDownLimit
 local boolean stopRotatingDown = false
+-- For the next two variables, 0 degrees is pointing left, 90 is point up, and 270 is pointing down
+-- angle of the upper limit for the arrow to rotate to
 local double arrowUpLimit = 80
+-- angle of the lower limit for the arrow to rotate to
 local double arrowDownLimit = 280
 
+-- stores the next type of bobble to shot out. randomized after each firing
 local integer nextBobble = 1
 
+-- Arrays (tables?) of bobbles and barriers
 local bobbles = {}
 local barriers = {}
+
+-- Used for delta time
+local lastTime = playdate.getCurrentTimeMilliseconds()
+
+-- function to setup up the preview bobble (used multiple times)
+function setUpPreviewBobble()
+    previewSprite = gfx.sprite.new( gfx.image.new("images/bobble" .. tostring(nextBobble)) )
+    previewSprite:moveTo( 400, 120 )
+    previewSprite:add()
+end
+
+-- function to load levels. Hardcoded for first draft
+function loadLevel(levelFileName)
+    local file = playdate.file.open(levelFileName, playdate.file.kFileRead)
+    local num = 1
+    repeat
+        local l = file:readline()
+        if l then
+            --splits string into an array
+            --Line structure in level file should be
+            --<Bobble Type (1-3)> <X Coordinate> <Y Coordinate>
+            result = {};
+            for match in (l.." "):gmatch("(.-)".." ") do
+                table.insert(result, match);
+            end
+            -- creates stationary bobble from the data in the line
+            bobbles[num] = Bobble:createStationary(tonumber(result[1]), tonumber(result[2]), tonumber(result[3]))
+            num = num + 1
+        end
+    until l == nil
+
+    file:close()
+end
 
 -- A function to set up our game environment.
 
 function myGameSetUp()
-
+    -- sets the seed to use for random number generation
     math.randomseed(playdate.getSecondsSinceEpoch())
+    -- starts with a random number for the bobble and is rolled again after every shot
     nextBobble = math.random(1,3)
 
     -- Set up the player sprite.
@@ -55,17 +97,19 @@ function myGameSetUp()
     playerSprite:moveTo( 400, 120 ) -- this is where the center of the sprite is placed; (200,120) is the center of the Playdate screen
     playerSprite:add() -- This is critical!
 
-    previewSprite = gfx.sprite.new( gfx.image.new("images/bobble" .. tostring(nextBobble)) )
-    previewSprite:moveTo( 400, 120 ) -- this is where the center of the sprite is placed; (200,120) is the center of the Playdate screen
-    previewSprite:add() -- This is critical!
+    setUpPreviewBobble()
 
     local borderImage = gfx.image.new("images/border")
     assert( borderImage ) -- make sure the image was where we thought
 
+    -- Four walls to prevent the balls from escaping
     barriers[1] = Barrier:create(200, 10, true, false)
     barriers[2] = Barrier:create(200, 230, true, false)
     barriers[3] = Barrier:create(10, 120, false, true)
     barriers[3] = Barrier:create(420, 120, false, false)
+
+    -- loads a level
+    loadLevel("levels/test.lvl")
 
     -- We want an environment displayed behind our sprite.
     -- There are generally two ways to do this:
@@ -96,7 +140,6 @@ myGameSetUp()
 -- `playdate.update()` is the heart of every Playdate game.
 -- This function is called right before every frame is drawn onscreen.
 -- Use this function to poll input, run game logic, and move sprites.
-local lastTime = playdate.getCurrentTimeMilliseconds()
 
 function playdate.update()
 
@@ -105,15 +148,15 @@ function playdate.update()
     -- Note that it is possible for more than one of these directions
     -- to be pressed at once, if the user is pressing diagonally.
 
-    -- TODO: Crank Alert
-    -- https://sdk.play.date/1.10.0/Inside%20Playdate.html#C-ui.crankIndicator
-
+    -- calculates deltatime
     local currentTime = playdate.getCurrentTimeMilliseconds()
     local deltaTime = currentTime - lastTime
     lastTime = currentTime
 
+    -- sets the arrow to rotate to the position we want to shoot the bobble at
     playerSprite:setRotation(arrowRotation)
 
+    -- prevents the angle we want to shoot at from going above or below a certain threshold
     if arrowRotation >= arrowUpLimit and arrowRotation < 180 then
         stopRotatingUp = true
         arrowRotation = arrowUpLimit
@@ -127,30 +170,35 @@ function playdate.update()
         stopRotatingDown = false
     end
 
+    -- Rotates the arrow when the crank is rotated
     if (playdate.getCrankChange() > 0 and not stopRotatingUp) then
         arrowRotation += playdate.getCrankChange();
     elseif (playdate.getCrankChange() < 0 and not stopRotatingDown) then
         arrowRotation += playdate.getCrankChange();
     end
 
+    -- prevents the angle from exceeding 360 for ease of use
     arrowRotation = arrowRotation % 360
 
+    -- moves the bobbles if they should be moving
+    -- possibly refactoring to update since it handles collisions as well
     for i=1,#(bobbles) 
     do
-        -- add a conditional for if the latest bobble is moving
         bobbles[i]:move(deltaTime)
     end
 
+    -- when pressing the up d-pad
     if playdate.buttonJustPressed(playdate.kButtonUp) then
-        local num = #(bobbles) + 1
+        -- Only fires a new bobble if the last bobble is done moving
         if #(bobbles) == 0 or not bobbles[#(bobbles)].isMoving then
-            bobbles[num] = Bobble:create(nextBobble, 400, 120, arrowRotation)
+            -- new bobble is made and starts moving
+            bobbles[#(bobbles)+1] = Bobble:create(nextBobble, 400, 120, arrowRotation)
+            -- picks the type of bobble for the next shot
             nextBobble = math.random(1,3)
+            -- resets the preview bobble so it displays accurately
             previewSprite:remove()
             previewSprite = nil
-            previewSprite = gfx.sprite.new( gfx.image.new("images/bobble" .. tostring(nextBobble)) )
-            previewSprite:moveTo( 400, 120 )
-            previewSprite:add()
+            setUpPreviewBobble()
         end
     end
 
@@ -160,8 +208,5 @@ function playdate.update()
 
     gfx.sprite.update()
     playdate.timer.updateTimers()
-
-    --gfx.drawText(tostring(stopRotatingDown), 10, 10)
-    --gfx.drawText(tostring(playdate.getCrankChange()), 10, 30)
 
 end

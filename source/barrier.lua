@@ -26,7 +26,7 @@ function Barrier:create(x, y, isHorizontal, isSticky)
 
     barr.barrierSprite:moveTo( x, y ) 
     barr.barrierSprite:add()
-    barr.barrierSprite:setGroups(2)
+    barr.barrierSprite:setGroups(kBarrier)
     if not isHorizontal then
         barr.barrierSprite:setRotation(90)
     end

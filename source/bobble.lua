@@ -26,12 +26,15 @@ function Bobble:createStationary(type, x, y)
     bble.speedX = 0
     bble.speedY = 0
 
-    -- Type is an integer that can only be 1,2 or 3
-    bble.type = type
     bble.bobbleSprite = gfx.sprite.new( bobbleImage )
     
+    -- Type is an integer that can only be 1,2 or 3
+    bble.bobbleSprite.type = type
     -- used to tell what the object is during collisions
     bble.bobbleSprite.entity = kBobble
+
+    -- Neighbors of bobbles to check for popping
+    bble.bobbleSprite.neighbors = {}
     
     bble.bobbleSprite:moveTo( x, y ) 
     bble.bobbleSprite:add()
@@ -51,8 +54,6 @@ function Bobble:create(type, x, y, angle)
     assert( bobbleImage ) -- make sure the image was where we thought
     
     setmetatable(bble, Bobble)
-    -- Type is an integer that can only be 1,2 or 3
-    bble.type = type
     -- firing angle the bobble will move at
     bble.angle = angle
     bble.bobbleSprite = gfx.sprite.new( bobbleImage )
@@ -61,6 +62,11 @@ function Bobble:create(type, x, y, angle)
     bble.speedY = .2
     -- used to tell what the object is during collisions
     bble.bobbleSprite.entity = kBobble
+    -- Type is an integer that can only be 1,2 or 3
+    bble.bobbleSprite.type = type
+
+    -- Neighbors of bobbles to check for popping
+    bble.bobbleSprite.neighbors = {}
 
     bble.isMoving = true
     
@@ -78,7 +84,7 @@ end
 
 -- may not be used
 function Bobble:getType()
-    return self.type
+    return self.bobbleSprite.type
 end
 
 function Bobble:move(deltaTime)
@@ -102,7 +108,13 @@ function Bobble:move(deltaTime)
                 end
             else
                 self.isMoving = false
-                -- Check Collisions ford popping bobbles
+                -- Check Collisions for popping bobbles
+                if collision.other.entity == kBobble then
+                    -- Add to neighborhood
+                    self.bobbleSprite.neighbors[#self.bobbleSprite.neighbors + 1] = collision.other
+                    collision.other.neighbors[#collision.other.neighbors + 1] = self.bobbleSprite
+                    -- Check for pops
+                end
             end
         end
     end

@@ -58,20 +58,28 @@ end
 -- function to load levels. Hardcoded for first draft
 function loadLevel(levelFileName)
     local file = playdate.file.open(levelFileName, playdate.file.kFileRead)
-    local num = 1
     repeat
         local l = file:readline()
         if l then
             --splits string into an array
             --Line structure in level file should be
-            --<Bobble Type (1-3)> <X Coordinate> <Y Coordinate>
+            --Input types:
+            --B = Bobble
+            --B <Bobble Type (1-3)> <X Coordinate> <Y Coordinate>
+            --N = Neighbor
+            --N <Bobble a> <Bobble b>
+            ----Note: You will need to have an entry for <a> <b> and <b> <a>
             result = {};
             for match in (l.." "):gmatch("(.-)".." ") do
                 table.insert(result, match);
             end
             -- creates stationary bobble from the data in the line
-            bobbles[num] = Bobble:createStationary(tonumber(result[1]), tonumber(result[2]), tonumber(result[3]))
-            num = num + 1
+            if result[1] == "B" then
+                bobbles[#bobbles+1] = Bobble:createStationary(tonumber(result[2]), tonumber(result[3]), tonumber(result[4]))
+            elseif result[1] == "N" then
+                -- Everything is nil and bobbles is empty. I assume thats because its called during the setup but I feel like this should still work
+                --bobbles[result[2]].bobbleSprite.neighbors[#(bobbles[result[2]].bobbleSprite.neighbors)+1] = bobbles[result[3]].bobbleSprite
+            end
         end
     until l == nil
 
@@ -192,7 +200,7 @@ function playdate.update()
         -- Only fires a new bobble if the last bobble is done moving
         if #(bobbles) == 0 or not bobbles[#(bobbles)].isMoving then
             -- new bobble is made and starts moving
-            bobbles[#(bobbles)+1] = Bobble:create(nextBobble, 400, 120, arrowRotation)
+            table.insert(bobbles, Bobble:create(nextBobble, 400, 120, arrowRotation))
             -- picks the type of bobble for the next shot
             nextBobble = math.random(1,3)
             -- resets the preview bobble so it displays accurately
@@ -201,6 +209,61 @@ function playdate.update()
             setUpPreviewBobble()
         end
     end
+
+    -- This is admittedly kinda hacky. bobbles don't actually get removed for some reason.
+    -- Still to investigate
+    -- Remove from bobbles array
+    local count = 0
+    for i=1,#bobbles
+    do
+        if bobbles[i].bobbleSprite.poppable then
+            count = count + 1
+        end
+    end
+    --print(count)
+    if count >=3 then
+        -- Remove from neighbors arrays
+        for i=1,#bobbles
+        do
+            for j=#bobbles[i].bobbleSprite.neighbors,1,-1
+            do
+                if bobbles[i].bobbleSprite.neighbors[j].poppable then
+                    bobbles[i].bobbleSprite.neighbors[j]:remove()
+                    table.remove(bobbles[i].bobbleSprite.neighbors, j)
+                end
+            end
+        end
+        -- Remove from bobbles array
+        for i=#bobbles,1
+        do
+            if bobbles[i].bobbleSprite.poppable then
+                bobbles[i].bobbleSprite.neighbors[j]:remove()
+                table.remove(bobbles, i)
+            end
+        end
+        count = 0
+        
+        for i=1,#bobbles
+        do
+            bobbles[i].bobbleSprite.poppable = false
+            for j=#bobbles[i].bobbleSprite.neighbors,1,-1
+            do
+                bobbles[i].bobbleSprite.neighbors[j].poppable = false
+            end
+        end
+    else
+        for i=1,#bobbles
+        do
+            bobbles[i].bobbleSprite.poppable = false
+            for j=#bobbles[i].bobbleSprite.neighbors,1,-1
+            do
+                bobbles[i].bobbleSprite.neighbors[j].poppable = false
+            end
+        end
+        
+    end
+
+    
 
     -- Call the functions below in playdate.update() to draw sprites and keep
     -- timers updated. (We aren't using timers in this example, but in most

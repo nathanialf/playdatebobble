@@ -41,6 +41,9 @@ local double arrowDownLimit = 280
 -- stores the next type of bobble to shot out. randomized after each firing
 local integer nextBobble = 1
 
+-- has the crankIndicator been started
+local boolean crankIndicatorStarted = false
+
 -- Arrays (tables?) of bobbles and barriers
 local bobbles = {}
 local barriers = {}
@@ -103,6 +106,9 @@ function myGameSetUp()
     -- starts with a random number for the bobble and is rolled again after every shot
     nextBobble = math.random(1,3)
 
+    -- Starts Crank Indicator
+    playdate.ui.crankIndicator:start()
+
     -- Set up the player sprite.
     -- The :setCenter() call specifies that the sprite will be anchored at its center.
     -- The :moveTo() call moves our sprite to the center of the display.
@@ -130,7 +136,8 @@ function myGameSetUp()
     barriers[3] = Barrier:create(420, 120, false, false)
 
     -- loads a level
-    loadLevel("levels/test.lvl")
+    --loadLevel("levels/test.lvl")
+    loadLevel("levels/test_easy.lvl")
 
     -- We want an environment displayed behind our sprite.
     -- There are generally two ways to do this:
@@ -223,7 +230,8 @@ function playdate.update()
                 )
             )
             -- picks the type of bobble for the next shot
-            nextBobble = math.random(1,3)
+            --nextBobble = math.random(1,3)
+            nextBobble = 3
             -- resets the preview bobble so it displays accurately
             previewSprite:remove()
             previewSprite = nil
@@ -232,8 +240,6 @@ function playdate.update()
     end
 
     -- This is admittedly kinda hacky. 
-    -- TODO: Bobbles don't actually get removed for some reason.
-    ---- Blocks adding and end state to the level
     local count = 0
     for i=1,#bobbles
     do
@@ -254,17 +260,17 @@ function playdate.update()
             end
         end
         -- Remove from bobbles array
-        for i=#bobbles,1
+        for i=#bobbles,1,-1
         do
             if bobbles[i].bobbleSprite.poppable then
-                bobbles[i].bobbleSprite.neighbors[j]:remove()
+                bobbles[i].bobbleSprite:remove()
                 table.remove(bobbles, i)
             end
         end
         for i=1,#bobbles
         do
             bobbles[i].bobbleSprite.poppable = false
-            for j=#bobbles[i].bobbleSprite.neighbors,1,-1
+            for j=1,#bobbles[i].bobbleSprite.neighbors
             do
                 bobbles[i].bobbleSprite.neighbors[j].poppable = false
             end
@@ -273,21 +279,37 @@ function playdate.update()
         for i=1,#bobbles
         do
             bobbles[i].bobbleSprite.poppable = false
-            for j=#bobbles[i].bobbleSprite.neighbors,1,-1
+            for j=1,#bobbles[i].bobbleSprite.neighbors
             do
                 bobbles[i].bobbleSprite.neighbors[j].poppable = false
             end
         end 
     end
-    -- debugging why the bobbles arent removed from the table
-    print(#bobbles)
-    
 
     -- Call the functions below in playdate.update() to draw sprites and keep
     -- timers updated. (We aren't using timers in this example, but in most
     -- average-complexity games, you will.)
 
+    
+    
+
     gfx.sprite.update()
     playdate.timer.updateTimers()
+
+    -- Displays the crank indicator
+    -- NOTE: This needs to be placed after the updateTimers()
+    if playdate.isCrankDocked() then
+        playdate.ui.crankIndicator:update()
+    end
+
+    -- Check for end of level
+    if #bobbles == 0 then
+        -- LEVEL IS BEAT
+        -- Apply score to a file
+        -- Score isnt defined yet, probably will be time and shots fired
+        -- NOTE: This needs to be placed after the  gfx.sprite.update()
+        gfx.drawText("*Level Complete*", 40, 40)
+        --print("Level Complete") -- Debug
+    end
 
 end

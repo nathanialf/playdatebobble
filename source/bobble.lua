@@ -90,8 +90,10 @@ function playdate.graphics.sprite:setPoppableOnCollision()
     -- Sets poppable to be true on all neighbors of the same type
     for i=1,#(self.neighbors)
     do
-        if (not self.neighbors[i].poppable) and (self.neighbors[i].type == self.type) then
-            self.neighbors[i]:setPoppableOnCollision()
+        if self.neighbors[i] ~= nil then
+            if (not self.neighbors[i].poppable) and (self.neighbors[i].type == self.type) then
+                self.neighbors[i]:setPoppableOnCollision()
+            end
         end
     end
 end

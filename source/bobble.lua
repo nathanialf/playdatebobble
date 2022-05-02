@@ -28,6 +28,8 @@ function Bobble:createStationary(type, x, y)
     
     bble.bobbleSprite:moveTo( x, y ) 
     bble.bobbleSprite:add()
+
+    return bble
 end
 
 -- constructor for the fired bobbles
@@ -38,8 +40,8 @@ function Bobble:create(type, x, y, angle)
     -- firing angle the bobble will move at
     bble.angle = angle
     -- speed the bobble will move at in each axis
-    bble.speedX = .2
-    bble.speedY = .2
+    bble.speedX = .4
+    bble.speedY = .4
     bble.type = type
 
     bble.isMoving = true
@@ -64,8 +66,8 @@ function createBobbleSprite(type)
     -- used to tell what the object is during collisions
     bobbleSprite.entity = kBobble
 
-    -- UUID
-    bobbleSprite.UUID = playdate.string.UUID(15)
+    -- Sets opacity
+    bobbleSprite:setOpaque(false)
 
     -- collision rect is set to the sprites location and dimensions
     bobbleSprite:setCollideRect(0, 0, bobbleSprite:getSize())
@@ -82,17 +84,10 @@ function createBobbleSprite(type)
     return bobbleSprite
 end
 
+-- called when the bobble collides with another of the same type
 function playdate.graphics.sprite:setPoppableOnCollision()
-
-    -- NEW IDEA
-    -- Add a try to Pop variable to the bobbles through the network of neighbors.
-    -- Check in main.lua through all the bobbles in the array to see if the amount to pop is past the threshold
-    -- pop them all if past the threshold, reset the try to pop variable otherwise
-
-    -- This isnt going deep. only runs once per impact no matter what
-    
     self.poppable = true
-    --print(self.poppable)
+    -- Sets poppable to be true on all neighbors of the same type
     for i=1,#(self.neighbors)
     do
         if (not self.neighbors[i].poppable) and (self.neighbors[i].type == self.type) then

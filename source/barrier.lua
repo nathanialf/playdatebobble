@@ -23,6 +23,11 @@ function Barrier:create(x, y, isHorizontal, isSticky)
     barr.isHorizontal = isHorizontal
     barr.barrierSprite = gfx.sprite.new( barrierImage )
     barr.barrierSprite.isSticky = isSticky
+
+    -- Sets opacity
+    -- Unused but just in case it ends up being used and I forget
+    barr.barrierSprite:setOpaque(false)
+
     barr.barrierSprite:moveTo( x, y ) 
     barr.barrierSprite:add()
     

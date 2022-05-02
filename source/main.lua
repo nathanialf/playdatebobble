@@ -50,7 +50,7 @@ local lastTime = playdate.getCurrentTimeMilliseconds()
 
 -- function to setup up the preview bobble (used multiple times)
 function setUpPreviewBobble()
-    previewSprite = gfx.sprite.new( gfx.image.new("images/bobble" .. tostring(nextBobble)) )
+    previewSprite = gfx.sprite.new(gfx.image.new("images/bobble" .. tostring(nextBobble)))
     previewSprite:moveTo( 400, 120 )
     previewSprite:add()
 end
@@ -68,17 +68,26 @@ function loadLevel(levelFileName)
             --B <Bobble Type (1-3)> <X Coordinate> <Y Coordinate>
             --N = Neighbor
             --N <Bobble a> <Bobble b>
-            ----Note: You will need to have an entry for <a> <b> and <b> <a>
+            ----Note: You will need to have an entry for N <a> <b> and N <b> <a>
             result = {};
             for match in (l.." "):gmatch("(.-)".." ") do
                 table.insert(result, match);
             end
             -- creates stationary bobble from the data in the line
             if result[1] == "B" then
-                bobbles[#bobbles+1] = Bobble:createStationary(tonumber(result[2]), tonumber(result[3]), tonumber(result[4]))
+                table.insert(
+                    bobbles, 
+                    Bobble:createStationary(
+                        tonumber(result[2]), 
+                        tonumber(result[3]), 
+                        tonumber(result[4])
+                    )
+                )
             elseif result[1] == "N" then
-                -- Everything is nil and bobbles is empty. I assume thats because its called during the setup but I feel like this should still work
-                --bobbles[result[2]].bobbleSprite.neighbors[#(bobbles[result[2]].bobbleSprite.neighbors)+1] = bobbles[result[3]].bobbleSprite
+                table.insert(
+                    bobbles[tonumber(result[2])].bobbleSprite.neighbors, 
+                    bobbles[tonumber(result[3])].bobbleSprite
+                )
             end
         end
     until l == nil
@@ -102,6 +111,10 @@ function myGameSetUp()
     assert( playerImage ) -- make sure the image was where we thought
 
     playerSprite = gfx.sprite.new( playerImage )
+
+    -- Sets opacity
+    playerSprite:setOpaque(false)
+
     playerSprite:moveTo( 400, 120 ) -- this is where the center of the sprite is placed; (200,120) is the center of the Playdate screen
     playerSprite:add() -- This is critical!
 
@@ -200,7 +213,15 @@ function playdate.update()
         -- Only fires a new bobble if the last bobble is done moving
         if #(bobbles) == 0 or not bobbles[#(bobbles)].isMoving then
             -- new bobble is made and starts moving
-            table.insert(bobbles, Bobble:create(nextBobble, 400, 120, arrowRotation))
+            table.insert(
+                bobbles, 
+                Bobble:create(
+                    nextBobble, 
+                    400, 
+                    120, 
+                    arrowRotation
+                )
+            )
             -- picks the type of bobble for the next shot
             nextBobble = math.random(1,3)
             -- resets the preview bobble so it displays accurately
@@ -210,9 +231,9 @@ function playdate.update()
         end
     end
 
-    -- This is admittedly kinda hacky. bobbles don't actually get removed for some reason.
-    -- Still to investigate
-    -- Remove from bobbles array
+    -- This is admittedly kinda hacky. 
+    -- TODO: Bobbles don't actually get removed for some reason.
+    ---- Blocks adding and end state to the level
     local count = 0
     for i=1,#bobbles
     do
@@ -220,7 +241,6 @@ function playdate.update()
             count = count + 1
         end
     end
-    --print(count)
     if count >=3 then
         -- Remove from neighbors arrays
         for i=1,#bobbles
@@ -241,8 +261,6 @@ function playdate.update()
                 table.remove(bobbles, i)
             end
         end
-        count = 0
-        
         for i=1,#bobbles
         do
             bobbles[i].bobbleSprite.poppable = false
@@ -250,7 +268,7 @@ function playdate.update()
             do
                 bobbles[i].bobbleSprite.neighbors[j].poppable = false
             end
-        end
+        end 
     else
         for i=1,#bobbles
         do
@@ -259,10 +277,10 @@ function playdate.update()
             do
                 bobbles[i].bobbleSprite.neighbors[j].poppable = false
             end
-        end
-        
+        end 
     end
-
+    -- debugging why the bobbles arent removed from the table
+    print(#bobbles)
     
 
     -- Call the functions below in playdate.update() to draw sprites and keep

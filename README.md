@@ -47,8 +47,10 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
 <!--![4/27/2022 Screenshot](resource/screenshots/playdate-20220427-233610.png)-->
 <!--![4/28/2022 Screenshot](resource/screenshots/playdate-20220428-175705.png)-->
 In-Game Screenshot
+
 ![5/1/2022 In-Game Screenshot](resource/screenshots/playdate-20220501-222305.png)
 
 Menu Screenshot (see TODO for note about style)
+
 ![5/3/2022 Menu Screenshot](resource/screenshots/playdate-20220503-015607.png)
 

@@ -16,7 +16,13 @@ local kBarrier = 2
 function Barrier:create(x, y, isHorizontal, isSticky)
     local barr = {}
 
-    local barrierImage = gfx.image.new("images/border")
+    local barrierImage
+    if isSticky then
+        barrierImage = gfx.image.new("images/borderSticky")
+    else
+        barrierImage = gfx.image.new("images/border")
+    end
+
     assert( barrierImage ) -- make sure the image was where we thought
     
     setmetatable(barr, Barrier)
@@ -26,7 +32,7 @@ function Barrier:create(x, y, isHorizontal, isSticky)
 
     -- Sets opacity
     -- Unused but just in case it ends up being used and I forget
-    barr.barrierSprite:setOpaque(false)
+    barr.barrierSprite:setOpaque(true)
 
     barr.barrierSprite:moveTo( x, y ) 
     barr.barrierSprite:add()

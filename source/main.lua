@@ -9,6 +9,7 @@ import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 import "CoreLibs/ui"
+import "CoreLibs/nineslice"
 
 import "bobble"
 import "barrier"
@@ -51,6 +52,85 @@ local barriers = {}
 -- Used for delta time
 local lastTime = playdate.getCurrentTimeMilliseconds()
 
+-- view is the state the game is in at any given moment
+-- 0 = Level select
+-- 1 = In Level
+-- 2 = Level Complete
+-- 3 = Level Failed
+local view = 0
+
+-- Menu stuff
+-- From Menu example in SDK
+
+local gridFont = gfx.font.new("fonts/blocky")
+assert(gridFont)
+gridFont:setTracking(1)
+
+gridview = playdate.ui.gridview.new(44, 44)
+
+
+function gridview:drawCell(section, row, column, selected, x, y, width, height)
+
+    if selected then
+        gfx.setLineWidth(3)
+        gfx.drawCircleInRect(x, y, width+1, height+1)
+    else
+        gfx.setLineWidth(0)
+        gfx.drawCircleInRect(x+4, y+4, width-8, height-8)
+    end
+    local cellText = ""..row.."-"..column
+
+    gfx.setFont(gridFont)
+    gfx.drawTextInRect(cellText, x, y+18, width, 20, nil, nil, kTextAlignment.center)
+
+    if playdate.buttonJustPressed(playdate.kButtonA) and selected then
+        if section == 1 and row == 1 and column == 1 then
+            loadLevel("levels/test_easy.lvl")
+        end
+        if section == 1 and row == 1 and column == 2 then
+            loadLevel("levels/test.lvl")
+        end
+    end
+
+end
+
+function gridview:drawSectionHeader(section, x, y, width, height)
+    gfx.drawText("*Section ".. section .. "*", x + 10, y + 8)
+end
+
+-- buttons --
+function playdate.AButtonUp()
+    --toggleSelection()
+end
+function playdate.BButtonUp()
+    --toggleSelection()
+end
+
+function playdate.upButtonUp()
+    if view == 0 then
+        gridview:selectPreviousRow(true)
+    end
+end
+
+function playdate.downButtonUp()
+    if view == 0 then
+        gridview:selectNextRow(true)
+    end
+end
+
+function playdate.leftButtonUp()
+    if view == 0 then
+        gridview:selectPreviousColumn(true)
+    end
+end
+
+function playdate.rightButtonUp()
+    if view == 0 then
+        gridview:selectNextColumn(true)
+    end
+end
+--
+
 -- function to setup up the preview bobble (used multiple times)
 function setUpPreviewBobble()
     previewSprite = gfx.sprite.new(gfx.image.new("images/bobble" .. tostring(nextBobble)))
@@ -72,7 +152,7 @@ function loadLevel(levelFileName)
             --N = Neighbor
             --N <Bobble a> <Bobble b>
             ----Note: You will need to have an entry for N <a> <b> and N <b> <a>
-            result = {};
+            local result = {};
             for match in (l.." "):gmatch("(.-)".." ") do
                 table.insert(result, match);
             end
@@ -96,6 +176,9 @@ function loadLevel(levelFileName)
     until l == nil
 
     file:close()
+    
+    arrowRotation = 0
+    view = 1
 end
 
 -- A function to set up our game environment.
@@ -130,14 +213,14 @@ function myGameSetUp()
     assert( borderImage ) -- make sure the image was where we thought
 
     -- Four walls to prevent the balls from escaping
-    barriers[1] = Barrier:create(200, 10, true, false)
+    barriers[1] = Barrier:create(10, 120, false, true)
     barriers[2] = Barrier:create(200, 230, true, false)
-    barriers[3] = Barrier:create(10, 120, false, true)
-    barriers[3] = Barrier:create(420, 120, false, false)
+    barriers[3] = Barrier:create(200, 10, true, false)
+    barriers[4] = Barrier:create(420, 120, false, false)
 
     -- loads a level
     --loadLevel("levels/test.lvl")
-    loadLevel("levels/test_easy.lvl")
+    --loadLevel("levels/test_easy.lvl")
 
     -- We want an environment displayed behind our sprite.
     -- There are generally two ways to do this:
@@ -156,6 +239,14 @@ function myGameSetUp()
             gfx.clearClipRect() -- clear so we don't interfere with drawing that comes after this
         end
     )
+
+    gridview.backgroundImage = playdate.graphics.nineSlice.new('images/shadowbox', 4, 4, 45, 45)
+    gridview:setNumberOfColumns(2)
+    gridview:setNumberOfRows(1, 1, 1, 1) -- number of sections is set automatically
+    gridview:setSectionHeaderHeight(28)
+    gridview:setContentInset(1, 4, 1, 4)
+    gridview:setCellPadding(4, 4, 4, 4)
+    gridview.changeRowOnColumnWrap = false
 
 end
 
@@ -181,135 +272,155 @@ function playdate.update()
     local deltaTime = currentTime - lastTime
     lastTime = currentTime
 
-    -- sets the arrow to rotate to the position we want to shoot the bobble at
-    playerSprite:setRotation(arrowRotation)
-
-    -- prevents the angle we want to shoot at from going above or below a certain threshold
-    if arrowRotation >= arrowUpLimit and arrowRotation < 180 then
-        stopRotatingUp = true
-        arrowRotation = arrowUpLimit
-    else
-        stopRotatingUp = false
-    end
-    if arrowRotation <= arrowDownLimit and arrowRotation >= 180 then
-        stopRotatingDown = true
-        arrowRotation = arrowDownLimit
-    else
-        stopRotatingDown = false
-    end
-
-    -- Rotates the arrow when the crank is rotated
-    if (playdate.getCrankChange() > 0 and not stopRotatingUp) then
-        arrowRotation += playdate.getCrankChange();
-    elseif (playdate.getCrankChange() < 0 and not stopRotatingDown) then
-        arrowRotation += playdate.getCrankChange();
-    end
-
-    -- prevents the angle from exceeding 360 for ease of use
-    arrowRotation = arrowRotation % 360
-
-    -- moves the bobbles if they should be moving
-    -- possibly refactoring to update since it handles collisions as well
-    for i=1,#(bobbles) 
-    do
-        bobbles[i]:move(deltaTime)
-    end
-
-    -- when pressing the up d-pad
-    if playdate.buttonJustPressed(playdate.kButtonUp) then
-        -- Only fires a new bobble if the last bobble is done moving
-        if #(bobbles) == 0 or not bobbles[#(bobbles)].isMoving then
-            -- new bobble is made and starts moving
-            table.insert(
-                bobbles, 
-                Bobble:create(
-                    nextBobble, 
-                    400, 
-                    120, 
-                    arrowRotation
-                )
-            )
-            -- picks the type of bobble for the next shot
-            --nextBobble = math.random(1,3)
-            nextBobble = 3
-            -- resets the preview bobble so it displays accurately
-            previewSprite:remove()
-            previewSprite = nil
-            setUpPreviewBobble()
-        end
-    end
-
-    -- This is admittedly kinda hacky. 
-    local count = 0
-    for i=1,#bobbles
-    do
-        if bobbles[i].bobbleSprite.poppable then
-            count = count + 1
-        end
-    end
-    if count >=3 then
-        -- Remove from neighbors arrays
-        for i=1,#bobbles
+    if view == 0 then
+        -- Level select
+    elseif view == 1 then
+        -- In Level
+        -- sets the arrow to rotate to the position we want to shoot the bobble at
+        playerSprite:setRotation(arrowRotation)
+    
+        -- prevents the angle from exceeding 360 for ease of use
+        arrowRotation = arrowRotation % 360
+    
+        -- moves the bobbles if they should be moving
+        -- possibly refactoring to update since it handles collisions as well
+        for i=1,#(bobbles) 
         do
-            for j=#bobbles[i].bobbleSprite.neighbors,1,-1
-            do
-                if bobbles[i].bobbleSprite.neighbors[j].poppable then
-                    bobbles[i].bobbleSprite.neighbors[j]:remove()
-                    table.remove(bobbles[i].bobbleSprite.neighbors, j)
+            bobbles[i]:move(deltaTime)
+        end
+    
+        -- Won't let you play if you have completed the level
+        -- Conditional will probably change to if in a game and beating the game will take you into a menu to remove interaction
+        if #bobbles ~= 0 then
+            -- when pressing the up d-pad
+            if playdate.buttonJustPressed(playdate.kButtonA) then
+                -- Only fires a new bobble if the last bobble is done moving
+                if #(bobbles) == 0 or not bobbles[#(bobbles)].isMoving then
+                    -- new bobble is made and starts moving
+                    table.insert(
+                        bobbles, 
+                        Bobble:create(
+                            nextBobble, 
+                            400, 
+                            120, 
+                            arrowRotation
+                        )
+                    )
+                    -- picks the type of bobble for the next shot
+                    nextBobble = math.random(1,3)
+                    --nextBobble = 3 --debug
+                    -- resets the preview bobble so it displays accurately
+                    previewSprite:remove()
+                    previewSprite = nil
+                    setUpPreviewBobble()
                 end
             end
+            
+            -- prevents the angle we want to shoot at from going above or below a certain threshold
+            if arrowRotation >= arrowUpLimit and arrowRotation < 180 then
+                stopRotatingUp = true
+                arrowRotation = arrowUpLimit
+            else
+                stopRotatingUp = false
+            end
+            if arrowRotation <= arrowDownLimit and arrowRotation >= 180 then
+                stopRotatingDown = true
+                arrowRotation = arrowDownLimit
+            else
+                stopRotatingDown = false
+            end
+        
+            -- Rotates the arrow when the crank is rotated
+            if (playdate.getCrankChange() > 0 and not stopRotatingUp) then
+                arrowRotation += playdate.getCrankChange();
+            elseif (playdate.getCrankChange() < 0 and not stopRotatingDown) then
+                arrowRotation += playdate.getCrankChange();
+            end        
         end
-        -- Remove from bobbles array
-        for i=#bobbles,1,-1
+    
+        -- This is admittedly kinda hacky. 
+        local count = 0
+        for i=1,#bobbles
         do
             if bobbles[i].bobbleSprite.poppable then
-                bobbles[i].bobbleSprite:remove()
-                table.remove(bobbles, i)
+                count = count + 1
             end
         end
-        for i=1,#bobbles
-        do
-            bobbles[i].bobbleSprite.poppable = false
-            for j=1,#bobbles[i].bobbleSprite.neighbors
+        if count >=3 then
+            -- Remove from neighbors arrays
+            for i=1,#bobbles
             do
-                bobbles[i].bobbleSprite.neighbors[j].poppable = false
+                for j=#bobbles[i].bobbleSprite.neighbors,1,-1
+                do
+                    if bobbles[i].bobbleSprite.neighbors[j].poppable then
+                        bobbles[i].bobbleSprite.neighbors[j]:remove()
+                        table.remove(bobbles[i].bobbleSprite.neighbors, j)
+                    end
+                end
             end
-        end 
-    else
-        for i=1,#bobbles
-        do
-            bobbles[i].bobbleSprite.poppable = false
-            for j=1,#bobbles[i].bobbleSprite.neighbors
+            -- Remove from bobbles array
+            for i=#bobbles,1,-1
             do
-                bobbles[i].bobbleSprite.neighbors[j].poppable = false
+                if bobbles[i].bobbleSprite.poppable then
+                    bobbles[i].bobbleSprite:remove()
+                    table.remove(bobbles, i)
+                end
             end
-        end 
+            for i=1,#bobbles
+            do
+                bobbles[i].bobbleSprite.poppable = false
+                for j=1,#bobbles[i].bobbleSprite.neighbors
+                do
+                    bobbles[i].bobbleSprite.neighbors[j].poppable = false
+                end
+            end 
+        else
+            for i=1,#bobbles
+            do
+                bobbles[i].bobbleSprite.poppable = false
+                for j=1,#bobbles[i].bobbleSprite.neighbors
+                do
+                    bobbles[i].bobbleSprite.neighbors[j].poppable = false
+                end
+            end 
+        end
+    elseif view == 2 then
+        -- Game Complete
+    elseif view == 3 then
+        -- Game Failed
     end
 
     -- Call the functions below in playdate.update() to draw sprites and keep
     -- timers updated. (We aren't using timers in this example, but in most
     -- average-complexity games, you will.)
 
-    
-    
-
     gfx.sprite.update()
     playdate.timer.updateTimers()
 
-    -- Displays the crank indicator
-    -- NOTE: This needs to be placed after the updateTimers()
-    if playdate.isCrankDocked() then
-        playdate.ui.crankIndicator:update()
-    end
-
     -- Check for end of level
-    if #bobbles == 0 then
-        -- LEVEL IS BEAT
-        -- Apply score to a file
-        -- Score isnt defined yet, probably will be time and shots fired
-        -- NOTE: This needs to be placed after the  gfx.sprite.update()
-        gfx.drawText("*Level Complete*", 40, 40)
-        --print("Level Complete") -- Debug
+    if view == 0 then
+        -- draw the level select view
+        gridview:drawInRect(20, 20, 360, 200)
+    elseif view == 1 then
+        -- In level UI
+        if #bobbles == 0 then
+            -- LEVEL IS BEAT
+            -- Apply score to a file
+            -- Score isnt defined yet, probably will be time and shots fired
+            -- NOTE: This needs to be placed after the  gfx.sprite.update()
+            gfx.drawText("*Level Complete*", 40, 40)
+            view = 0
+            --print("Level Complete") -- Debug
+        else 
+            -- Displays the crank indicator
+            -- NOTE: This needs to be placed after the updateTimers()
+            if playdate.isCrankDocked() then
+                playdate.ui.crankIndicator:update()
+            end
+        end
+    elseif view == 2 then
+        -- Game Complete UI
+    elseif view == 3 then
+        -- Game Failed UI
     end
-
 end

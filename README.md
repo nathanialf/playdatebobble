@@ -16,14 +16,29 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
 - Have grouped up bobbles and their "children" drop off the screen
   - May not happen
 - Levels
-  - Add end state to levels (Kinda implemented)
-    - Kinda implemented, displays text to the user
-    - Need to set a flag to prevent user action once the level is beat
+  - prompt user to retry or go to level select
+    - view = 2 for Level Beat
+    - view = 3 for level failed
+    - might be able to do the same view but I don't have a fail state decided
   - store level completion status
-- Add an actual barrier sprite
-- Add menuing system to browse through levels in `levels/`
-  - https://sdk.play.date/1.10.0/Inside%20Playdate.html#C-ui.gridview
-- Maybe add sounds
+- Sprite Updates
+  - Barrier sprites update but its pretty boring still
+  - Update the arrow sprite
+- Add menuing system to browse through levels in `source/levels/`
+  - Make menu columns and rows based on information from a file
+  - Make menu item selection load levels based on the same file
+    - Remove hard-coded level seleection
+  - Style menu to make it more personal than the example
+- Add sounds
+  - https://play.date/pulp/ For quick and easy (allegedly) sound creation
+  - Needed
+    - Sounds when hitting a barrier
+    - Sounds when hitting a bobble
+    - Sounds when popping bobbles
+    - Song to play in the background
+    - Menuing sounds
+      - Move cursor/change level
+      - Selecting an option/level
 
 ### Current Progress
 
@@ -31,5 +46,9 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
 
 <!--![4/27/2022 Screenshot](resource/screenshots/playdate-20220427-233610.png)-->
 <!--![4/28/2022 Screenshot](resource/screenshots/playdate-20220428-175705.png)-->
-![5/1/2022 Screenshot](resource/screenshots/playdate-20220501-222305.png)
+In-Game Screenshot
+![5/1/2022 In-Game Screenshot](resource/screenshots/playdate-20220501-222305.png)
+
+Menu Screenshot (see TODO for note about style)
+![5/3/2022 Menu Screenshot](resource/screenshots/playdate-20220503-015607.png)
 

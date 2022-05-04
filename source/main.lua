@@ -84,18 +84,40 @@ function gridview:drawCell(section, row, column, selected, x, y, width, height)
     gfx.drawTextInRect(cellText, x, y+18, width, 20, nil, nil, kTextAlignment.center)
 
     if playdate.buttonJustPressed(playdate.kButtonA) and selected then
-        if section == 1 and row == 1 and column == 1 then
-            loadLevel("levels/test_easy.lvl")
-        end
-        if section == 1 and row == 1 and column == 2 then
-            loadLevel("levels/test.lvl")
-        end
+        -- Reads from levels/menu.lvl which level to load based on the selected cell
+        -- This is super not great. Will need to find the best way to store this date in structure to easily
+        -- access as to not read every line in this file every time trying to enter a level
+        local file = playdate.file.open("levels/menu.lvl", playdate.file.kFileRead)
+        repeat
+            local l = file:readline()
+            if l then
+                --<section> <row> <column> <filename>
+                local result = {};
+                for match in (l.." "):gmatch("(.-)".." ") do
+                    table.insert(result, match);
+                end
+
+
+                if section == tonumber(result[1]) and
+                    row == tonumber(result[2]) and
+                    column == tonumber(result[3]) then
+                    loadLevel(result[4])  
+                    break
+                end
+            end
+        until l == nil
+
+        file:close()
     end
 
 end
 
 function gridview:drawSectionHeader(section, x, y, width, height)
-    gfx.drawText("*Section ".. section .. "*", x + 10, y + 8)
+    if section == 1 then
+        gfx.drawText("*Test Levels*", x + 10, y + 8)
+    else
+        gfx.drawText("*Section ".. section .. "*", x + 10, y + 8)
+    end
 end
 
 -- buttons --
@@ -108,28 +130,67 @@ end
 
 function playdate.upButtonUp()
     if view == 0 then
+        -- Menu Navigation
         gridview:selectPreviousRow(true)
+    elseif view == 1 and #bobbles ~= 0 then
+        -- Fires Bobbles
+        fireBobble()
     end
 end
 
 function playdate.downButtonUp()
     if view == 0 then
+        -- Menu Navigation
         gridview:selectNextRow(true)
+    elseif view == 1 and #bobbles ~= 0 then
+        -- Fires Bobbles
+        fireBobble()
     end
 end
 
 function playdate.leftButtonUp()
     if view == 0 then
+        -- Menu Navigation
         gridview:selectPreviousColumn(true)
+    elseif view == 1 and #bobbles ~= 0 then
+        -- Fires Bobbles
+        fireBobble()
     end
 end
 
 function playdate.rightButtonUp()
     if view == 0 then
+        -- Menu Navigation
         gridview:selectNextColumn(true)
+    elseif view == 1 and #bobbles ~= 0 then
+        -- Fires Bobbles
+        fireBobble()
     end
 end
 --
+
+function fireBobble()
+    -- Only fires a new bobble if the last bobble is done moving
+    if #(bobbles) == 0 or not bobbles[#(bobbles)].isMoving then
+        -- new bobble is made and starts moving
+        table.insert(
+            bobbles, 
+            Bobble:create(
+                nextBobble, 
+                400, 
+                120, 
+                arrowRotation
+            )
+        )
+        -- picks the type of bobble for the next shot
+        nextBobble = math.random(1,3)
+        --nextBobble = 3 --debug
+        -- resets the preview bobble so it displays accurately
+        previewSprite:remove()
+        previewSprite = nil
+        setUpPreviewBobble()
+    end
+end
 
 -- function to setup up the preview bobble (used multiple times)
 function setUpPreviewBobble()
@@ -240,9 +301,11 @@ function myGameSetUp()
         end
     )
 
+    -- TODO: Set automatically based on contents of levels/menu.lvl
+    -- GRIPE: Cant set Number of Columns by section
     gridview.backgroundImage = playdate.graphics.nineSlice.new('images/shadowbox', 4, 4, 45, 45)
     gridview:setNumberOfColumns(2)
-    gridview:setNumberOfRows(1, 1, 1, 1) -- number of sections is set automatically
+    gridview:setNumberOfRows(1, 1) -- number of sections is set automatically
     gridview:setSectionHeaderHeight(28)
     gridview:setContentInset(1, 4, 1, 4)
     gridview:setCellPadding(4, 4, 4, 4)
@@ -291,31 +354,7 @@ function playdate.update()
     
         -- Won't let you play if you have completed the level
         -- Conditional will probably change to if in a game and beating the game will take you into a menu to remove interaction
-        if #bobbles ~= 0 then
-            -- when pressing the up d-pad
-            if playdate.buttonJustPressed(playdate.kButtonA) then
-                -- Only fires a new bobble if the last bobble is done moving
-                if #(bobbles) == 0 or not bobbles[#(bobbles)].isMoving then
-                    -- new bobble is made and starts moving
-                    table.insert(
-                        bobbles, 
-                        Bobble:create(
-                            nextBobble, 
-                            400, 
-                            120, 
-                            arrowRotation
-                        )
-                    )
-                    -- picks the type of bobble for the next shot
-                    nextBobble = math.random(1,3)
-                    --nextBobble = 3 --debug
-                    -- resets the preview bobble so it displays accurately
-                    previewSprite:remove()
-                    previewSprite = nil
-                    setUpPreviewBobble()
-                end
-            end
-            
+        if #bobbles ~= 0 then            
             -- prevents the angle we want to shoot at from going above or below a certain threshold
             if arrowRotation >= arrowUpLimit and arrowRotation < 180 then
                 stopRotatingUp = true

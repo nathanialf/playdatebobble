@@ -18,16 +18,14 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
 - Levels
   - prompt user to retry or go to level select
     - view = 2 for Level Beat
-    - view = 3 for level failed
-    - might be able to do the same view but I don't have a fail state decided
+    - view = 3 for Level failed
+    - might be able to do the same view for beat and failed but I don't have a fail state decided
   - store level completion status
 - Sprite Updates
   - Barrier sprites update but its pretty boring still
   - Update the arrow sprite
-- Add menuing system to browse through levels in `source/levels/`
+- Improve menuing system to browse through levels in `source/levels/`
   - Make menu columns and rows based on information from a file
-  - Make menu item selection load levels based on the same file
-    - Remove hard-coded level seleection
   - Style menu to make it more personal than the example
 - Add sounds
   - https://play.date/pulp/ For quick and easy (allegedly) sound creation
@@ -46,9 +44,10 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
 
 <!--![4/27/2022 Screenshot](resource/screenshots/playdate-20220427-233610.png)-->
 <!--![4/28/2022 Screenshot](resource/screenshots/playdate-20220428-175705.png)-->
+<!--![5/1/2022 In-Game Screenshot](resource/screenshots/playdate-20220501-222305.png)-->
 In-Game Screenshot
 
-![5/1/2022 In-Game Screenshot](resource/screenshots/playdate-20220501-222305.png)
+![5/4/2022 In-Game Screenshot](resource/screenshots/playdate-20220504-012106.png)
 
 Menu Screenshot (see TODO for note about style)
 

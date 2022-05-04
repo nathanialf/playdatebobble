@@ -21,6 +21,7 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
     - view = 3 for Level failed
     - might be able to do the same view for beat and failed but I don't have a fail state decided
   - store level completion status
+  - Maybe add extra barriers in level files (EXTRA)
 - Sprite Updates
   - Barrier sprites update but its pretty boring still
   - Update the arrow sprite
@@ -51,5 +52,6 @@ In-Game Screenshot
 
 Menu Screenshot (see TODO for note about style)
 
-![5/3/2022 Menu Screenshot](resource/screenshots/playdate-20220503-015607.png)
+<!--![5/3/2022 Menu Screenshot](resource/screenshots/playdate-20220503-015607.png)-->
+![5/4/2022 Menu Screenshot](resource/screenshots/playdate-20220504-014448.png)
 

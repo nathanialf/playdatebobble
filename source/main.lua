@@ -61,7 +61,7 @@ local view = 0
 
 -- Menu stuff
 -- From Menu example in SDK
-
+-- Asset from SDK Example, will remove when I build a font
 local gridFont = gfx.font.new("fonts/blocky")
 assert(gridFont)
 gridFont:setTracking(1)
@@ -109,15 +109,12 @@ function gridview:drawCell(section, row, column, selected, x, y, width, height)
 
         file:close()
     end
-
 end
 
+-- May read from a file but probably unnecessary for this
+sectionNames = {"Test Levels", "Main Game"}
 function gridview:drawSectionHeader(section, x, y, width, height)
-    if section == 1 then
-        gfx.drawText("*Test Levels*", x + 10, y + 8)
-    else
-        gfx.drawText("*Section ".. section .. "*", x + 10, y + 8)
-    end
+    gfx.drawText("*"..sectionNames[section].."*", x + 10, y + 8)
 end
 
 -- buttons --

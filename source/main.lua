@@ -68,6 +68,10 @@ gridFont:setTracking(1)
 
 gridview = playdate.ui.gridview.new(44, 44)
 
+-- Menu structure
+levels = {}
+currentLevel = ""
+
 
 function gridview:drawCell(section, row, column, selected, x, y, width, height)
 
@@ -84,30 +88,16 @@ function gridview:drawCell(section, row, column, selected, x, y, width, height)
     gfx.drawTextInRect(cellText, x, y+18, width, 20, nil, nil, kTextAlignment.center)
 
     if playdate.buttonJustPressed(playdate.kButtonA) and selected then
-        -- Reads from levels/menu.lvl which level to load based on the selected cell
-        -- This is super not great. Will need to find the best way to store this date in structure to easily
-        -- access as to not read every line in this file every time trying to enter a level
-        local file = playdate.file.open("levels/menu.lvl", playdate.file.kFileRead)
-        repeat
-            local l = file:readline()
-            if l then
-                --<section> <row> <column> <filename>
-                local result = {};
-                for match in (l.." "):gmatch("(.-)".." ") do
-                    table.insert(result, match);
-                end
-
-
-                if section == tonumber(result[1]) and
-                    row == tonumber(result[2]) and
-                    column == tonumber(result[3]) then
-                    loadLevel(result[4])  
-                    break
-                end
+        -- Check to find the level that matches the selected cell and load it
+        for i=1,#levels do
+            if levels[i][1] == section and
+            levels[i][2] == row and
+            levels[i][3] == column then
+                loadLevel(levels[i][4])
+                break
             end
-        until l == nil
-
-        file:close()
+        end
+        
     end
 end
 
@@ -235,8 +225,17 @@ function loadLevel(levelFileName)
 
     file:close()
     
+    currentLevel = levelFileName
     arrowRotation = 0
     view = 1
+
+    -- picks the type of bobble for the next shot
+    nextBobble = math.random(1,3)
+    --nextBobble = 3 --debug
+    -- resets the preview bobble so it displays accurately
+    previewSprite:remove()
+    previewSprite = nil
+    setUpPreviewBobble()
 end
 
 -- A function to set up our game environment.
@@ -301,12 +300,36 @@ function myGameSetUp()
     -- TODO: Set automatically based on contents of levels/menu.lvl
     -- GRIPE: Cant set Number of Columns by section
     gridview.backgroundImage = playdate.graphics.nineSlice.new('images/shadowbox', 4, 4, 45, 45)
-    gridview:setNumberOfColumns(2)
+    gridview:setNumberOfColumns(6)
     gridview:setNumberOfRows(1, 1) -- number of sections is set automatically
     gridview:setSectionHeaderHeight(28)
     gridview:setContentInset(1, 4, 1, 4)
     gridview:setCellPadding(4, 4, 4, 4)
-    gridview.changeRowOnColumnWrap = false
+    gridview.changeRowOnColumnWrap = true
+
+    -- Reads from levels/menu.lvl which level to load based on the selected cell
+    local file = playdate.file.open("levels/menu.lvl", playdate.file.kFileRead)
+    repeat
+        local l = file:readline()
+        if l then
+            --<section> <row> <column> <filename>
+            local result = {};
+            for match in (l.." "):gmatch("(.-)".." ") do
+                table.insert(result, match);
+            end
+
+            table.insert(
+                levels, 
+                {
+                    tonumber(result[1]),
+                    tonumber(result[2]),
+                    tonumber(result[3]),
+                    result[4]
+                }
+            )
+        end
+    until l == nil
+    file:close()
 
 end
 
@@ -446,7 +469,7 @@ function playdate.update()
             -- NOTE: This needs to be placed after the  gfx.sprite.update()
             gfx.drawText("*Level Complete*", 40, 40)
             view = 0
-            --print("Level Complete") -- Debug
+            --view = 2
         else 
             -- Displays the crank indicator
             -- NOTE: This needs to be placed after the updateTimers()
@@ -460,3 +483,34 @@ function playdate.update()
         -- Game Failed UI
     end
 end
+
+local menu = playdate.getSystemMenu()
+
+local menuItem, error = menu:addMenuItem("Restart Level", function()
+    print("Restart Level")
+    for i=#bobbles,1,-1 do
+        for j=#bobbles[i].bobbleSprite.neighbors,1,-1
+        do
+            bobbles[i].bobbleSprite.neighbors[j]:remove()
+            table.remove(bobbles[i].bobbleSprite.neighbors, j)
+        end
+        bobbles[i].bobbleSprite:remove()
+        table.remove(bobbles, i)
+    end
+    loadLevel(currentLevel)
+end)
+
+local menuItem, error = menu:addMenuItem("Level Select", function()
+    print("Level Select")
+    for i=#bobbles,1,-1 do
+        for j=#bobbles[i].bobbleSprite.neighbors,1,-1
+        do
+            bobbles[i].bobbleSprite.neighbors[j]:remove()
+            table.remove(bobbles[i].bobbleSprite.neighbors, j)
+        end
+        bobbles[i].bobbleSprite:remove()
+        table.remove(bobbles, i)
+    end
+    currentLevel = ""
+    view = 0
+end)

@@ -43,11 +43,10 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
 
 - Works on personal PlayDate console and simulator
 
+In-Game Screenshot
 <!--![4/27/2022 Screenshot](resource/screenshots/playdate-20220427-233610.png)-->
 <!--![4/28/2022 Screenshot](resource/screenshots/playdate-20220428-175705.png)-->
 <!--![5/1/2022 In-Game Screenshot](resource/screenshots/playdate-20220501-222305.png)-->
-In-Game Screenshot
-
 ![5/4/2022 In-Game Screenshot](resource/screenshots/playdate-20220504-012106.png)
 
 Menu Screenshot (see TODO for note about style)

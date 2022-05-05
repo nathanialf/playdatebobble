@@ -49,6 +49,9 @@ local boolean crankIndicatorStarted = false
 local bobbles = {}
 local barriers = {}
 
+-- Shots fired for tracking score
+local shotsFired = 0
+
 -- Used for delta time
 local lastTime = playdate.getCurrentTimeMilliseconds()
 
@@ -72,9 +75,9 @@ gridview = playdate.ui.gridview.new(44, 44)
 levels = {}
 currentLevel = ""
 
-
+-- OVERRIDE
+-- Draws level select cells
 function gridview:drawCell(section, row, column, selected, x, y, width, height)
-
     if selected then
         gfx.setLineWidth(3)
         gfx.drawCircleInRect(x, y, width+1, height+1)
@@ -86,6 +89,14 @@ function gridview:drawCell(section, row, column, selected, x, y, width, height)
 
     gfx.setFont(gridFont)
     gfx.drawTextInRect(cellText, x, y+18, width, 20, nil, nil, kTextAlignment.center)
+    for i=1,#levels do
+        if levels[i][1] == section and
+        levels[i][2] == row and
+        levels[i][3] == column and
+        levels[i][5] > 0 then
+            gfx.drawTextInRect(""..levels[i][5], x, y+35, width, 20, nil, nil, kTextAlignment.right)
+        end
+    end
 
     if playdate.buttonJustPressed(playdate.kButtonA) and selected then
         -- Check to find the level that matches the selected cell and load it
@@ -103,6 +114,8 @@ end
 
 -- May read from a file but probably unnecessary for this
 sectionNames = {"Test Levels", "Main Game"}
+-- OVERRIDE
+-- Draws level select section headers from table above
 function gridview:drawSectionHeader(section, x, y, width, height)
     gfx.drawText("*"..sectionNames[section].."*", x + 10, y + 8)
 end
@@ -176,6 +189,7 @@ function fireBobble()
         previewSprite:remove()
         previewSprite = nil
         setUpPreviewBobble()
+        shotsFired += 1
     end
 end
 
@@ -238,6 +252,27 @@ function loadLevel(levelFileName)
     setUpPreviewBobble()
 end
 
+function removeAllBobbles()
+    -- Removes bobbles
+    for i=#bobbles,1,-1 do
+        for j=#bobbles[i].bobbleSprite.neighbors,1,-1
+        do
+            bobbles[i].bobbleSprite.neighbors[j]:remove()
+            table.remove(bobbles[i].bobbleSprite.neighbors, j)
+        end
+        bobbles[i].bobbleSprite:remove()
+        table.remove(bobbles, i)
+    end
+end
+
+-- Updates the high scores
+function updateHighScore(currentLevel, shotsFired)
+    -- if levels[i of currentLevel][5] == 0 or shotsFired < levels[i of currentLevel][5] then
+    -- levels[i of currentLevel][5] = shotsFired
+    -- write to menu.lvl at line of currentLevel
+    -- end
+end
+
 -- A function to set up our game environment.
 
 function myGameSetUp()
@@ -297,22 +332,15 @@ function myGameSetUp()
         end
     )
 
-    -- TODO: Set automatically based on contents of levels/menu.lvl
-    -- GRIPE: Cant set Number of Columns by section
-    gridview.backgroundImage = playdate.graphics.nineSlice.new('images/shadowbox', 4, 4, 45, 45)
-    gridview:setNumberOfColumns(6)
-    gridview:setNumberOfRows(1, 1) -- number of sections is set automatically
-    gridview:setSectionHeaderHeight(28)
-    gridview:setContentInset(1, 4, 1, 4)
-    gridview:setCellPadding(4, 4, 4, 4)
-    gridview.changeRowOnColumnWrap = true
+    local biggestCol = 0
+    local rowCount = {}
 
     -- Reads from levels/menu.lvl which level to load based on the selected cell
     local file = playdate.file.open("levels/menu.lvl", playdate.file.kFileRead)
     repeat
         local l = file:readline()
         if l then
-            --<section> <row> <column> <filename>
+            --<section> <row> <column> <filename> <highscore>
             local result = {};
             for match in (l.." "):gmatch("(.-)".." ") do
                 table.insert(result, match);
@@ -324,12 +352,37 @@ function myGameSetUp()
                     tonumber(result[1]),
                     tonumber(result[2]),
                     tonumber(result[3]),
-                    result[4]
+                    result[4],
+                    tonumber(result[5]),
                 }
             )
+            -- Finds the largest column number because we can only set it for across the whole gridview for some reason
+            if tonumber(result[3]) > biggestCol then
+                biggestCol = tonumber(result[3])
+            end
+            -- Grabs the largest row number for each section
+            if rowCount[tonumber(result[1])] == nil or tonumber(result[2]) > rowCount[tonumber(result[1])] then
+                rowCount[tonumber(result[1])] = tonumber(result[2])
+            end
         end
     until l == nil
     file:close()
+
+    -- TODO: Set automatically based on contents of levels/menu.lvl
+    -- GRIPE: Cant set Number of Columns by section
+    gridview.backgroundImage = playdate.graphics.nineSlice.new('images/shadowbox', 4, 4, 45, 45)
+    gridview:setNumberOfColumns(biggestCol)
+    --gridview:setNumberOfRows(1, 1) -- number of sections is set automatically
+    for i=1,#rowCount
+    do
+        if rowCount[i] ~= nil then
+            gridview:setNumberOfRowsInSection(i, rowCount[i])
+        end
+    end
+    gridview:setSectionHeaderHeight(28)
+    gridview:setContentInset(1, 4, 1, 4)
+    gridview:setCellPadding(4, 4, 4, 4)
+    gridview.changeRowOnColumnWrap = true
 
 end
 
@@ -459,7 +512,7 @@ function playdate.update()
     -- Check for end of level
     if view == 0 then
         -- draw the level select view
-        gridview:drawInRect(20, 20, 360, 200)
+        gridview:drawInRect(10, 10, 380, 220)
     elseif view == 1 then
         -- In level UI
         if #bobbles == 0 then
@@ -469,6 +522,9 @@ function playdate.update()
             -- NOTE: This needs to be placed after the  gfx.sprite.update()
             gfx.drawText("*Level Complete*", 40, 40)
             view = 0
+            updateHighScore(currentLevel, shotsFired)
+            currentLevel = ""
+            shotsFired = 0
             --view = 2
         else 
             -- Displays the crank indicator
@@ -484,33 +540,29 @@ function playdate.update()
     end
 end
 
+-- Sets menu button items
+-- Investigate if they can change during runtime
 local menu = playdate.getSystemMenu()
 
+-- Restarts the level if in game
 local menuItem, error = menu:addMenuItem("Restart Level", function()
-    print("Restart Level")
-    for i=#bobbles,1,-1 do
-        for j=#bobbles[i].bobbleSprite.neighbors,1,-1
-        do
-            bobbles[i].bobbleSprite.neighbors[j]:remove()
-            table.remove(bobbles[i].bobbleSprite.neighbors, j)
-        end
-        bobbles[i].bobbleSprite:remove()
-        table.remove(bobbles, i)
+    if view == 1 then
+        print("Restart Level")
+        removeAllBobbles()
+        -- Loads level again
+        shotsFired = 0
+        loadLevel(currentLevel)
     end
-    loadLevel(currentLevel)
 end)
 
+-- Switches back to level select if in game
 local menuItem, error = menu:addMenuItem("Level Select", function()
-    print("Level Select")
-    for i=#bobbles,1,-1 do
-        for j=#bobbles[i].bobbleSprite.neighbors,1,-1
-        do
-            bobbles[i].bobbleSprite.neighbors[j]:remove()
-            table.remove(bobbles[i].bobbleSprite.neighbors, j)
-        end
-        bobbles[i].bobbleSprite:remove()
-        table.remove(bobbles, i)
+    if view == 1 then
+        print("Level Select")
+        removeAllBobbles()
+        -- Changes back to the level select view
+        currentLevel = ""
+        shotsFired = 0
+        view = 0
     end
-    currentLevel = ""
-    view = 0
 end)

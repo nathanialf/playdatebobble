@@ -13,21 +13,17 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
 
 ### TODO
 - Add safegaurds for malformed level files
-- Have grouped up bobbles and their "children" drop off the screen
-  - May not happen
 - Levels
   - prompt user to retry or go to level select
     - view = 2 for Level Beat
     - view = 3 for Level failed
-    - might be able to do the same view for beat and failed but I don't have a fail state decided
-  - store level completion status
-  - Maybe add extra barriers in level files (EXTRA)
+      - might be able to do the same view for beat and failed but I don't have a fail state decided yet
+  - Save high score (pseudo-coded in updateHighScore)
 - Sprite Updates
   - Barrier sprites update but its pretty boring still
   - Update the arrow sprite
-- Improve menuing system to browse through levels in `source/levels/`
-  - Make menu columns and rows based on information from a file
-  - Style menu to make it more personal than the example
+- Improve menuing system
+  - Replace SDK Example Assets
 - Add sounds
   - https://play.date/pulp/ For quick and easy (allegedly) sound creation
   - Needed
@@ -38,6 +34,8 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
     - Menuing sounds
       - Move cursor/change level
       - Selecting an option/level
+- Investigations
+  - Changing the menu button items during runtime
 
 ### Current Progress
 
@@ -49,8 +47,20 @@ In-Game Screenshot
 <!--![5/1/2022 In-Game Screenshot](resource/screenshots/playdate-20220501-222305.png)-->
 ![5/4/2022 In-Game Screenshot](resource/screenshots/playdate-20220504-012106.png)
 
-Menu Screenshot (see TODO for note about style)
+Menu Screenshot 
 
 <!--![5/3/2022 Menu Screenshot](resource/screenshots/playdate-20220503-015607.png)-->
-![5/4/2022 Menu Screenshot](resource/screenshots/playdate-20220504-014448.png)
+<!--![5/4/2022 Menu Screenshot](resource/screenshots/playdate-20220504-014448.png)-->
+![5/4/2022 Menu Screenshot](resource/screenshots/playdate-20220504-232925.png)
 
+*(see TODO for note about SDK Assets)*
+
+### Stretch Goals
+Extra stuff that would be nice to do but not currently in the scope of the project
+- Have grouped up bobbles and their "children" drop off the screen
+- Add extra barriers in level files
+- Build a level editor
+    - PC based, not playdate based
+    - Building by hand is far too time consuming when adding all neighbor pairs
+- Display current score and level on the menu image
+  - https://sdk.play.date/1.10.0/Inside%20Playdate.html#f-setMenuImage

@@ -2,6 +2,6 @@ name=playdatebobble
 author=nathanialfine
 description=Making a test game
 bundleID=com.defnf.playdatebobble
-version=0.0.2
+version=0.1.0
 buildnumber=1
 imagePath=images

@@ -123,9 +123,25 @@ end
 -- buttons --
 function playdate.AButtonUp()
     --toggleSelection()
+    if view == 2 then
+        updateHighScore(currentLevel, shotsFired)
+        removeAllBobbles()
+        -- Changes back to the level select view
+        currentLevel = ""
+        shotsFired = 0
+        view = 0
+    end
 end
 function playdate.BButtonUp()
     --toggleSelection()
+    if view == 2 then
+        updateHighScore(currentLevel, shotsFired)
+        removeAllBobbles()
+        -- Loads level again
+        shotsFired = 0
+        loadLevel(currentLevel)
+        view = 1
+    end
 end
 
 function playdate.upButtonUp()
@@ -521,10 +537,9 @@ function playdate.update()
             -- Score isnt defined yet, probably will be time and shots fired
             -- NOTE: This needs to be placed after the  gfx.sprite.update()
             gfx.drawText("*Level Complete*", 40, 40)
-            view = 0
-            updateHighScore(currentLevel, shotsFired)
-            currentLevel = ""
-            shotsFired = 0
+            view = 2
+            --currentLevel = ""
+            --shotsFired = 0
             --view = 2
         else 
             -- Displays the crank indicator
@@ -535,6 +550,16 @@ function playdate.update()
         end
     elseif view == 2 then
         -- Game Complete UI
+        gfx.setColor(gfx.kColorWhite)
+        gfx.fillRect(40,40,320,160)
+        gfx.setColor(gfx.kColorBlack)
+        --gfx.drawText(, 200,120, kTextAlignment.center)
+        gfx.drawTextInRect("LEVEL COMPLETE", 40, 75, 320, 160, nil, nil, kTextAlignment.center)
+        gfx.drawTextInRect("SCORE: ", 40, 105, 320, 160, nil, nil, kTextAlignment.center)
+        -- Draw A button here centered above LEVEL SELECT
+        gfx.drawTextInRect("LEVEL SELECT ", 40, 165, 160, 160, nil, nil, kTextAlignment.center)
+        -- Draw B button here centered above RETRY LEVEL
+        gfx.drawTextInRect("RETRY LEVEL ", 160, 165, 240, 160, nil, nil, kTextAlignment.center)
     elseif view == 3 then
         -- Game Failed UI
     end

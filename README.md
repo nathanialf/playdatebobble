@@ -15,13 +15,13 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
 - Add safegaurds for malformed level files
 - Levels
   - prompt user to retry or go to level select
-    - view = 2 for Level Beat
     - view = 3 for Level failed
       - might be able to do the same view for beat and failed but I don't have a fail state decided yet
   - Save high score (pseudo-coded in updateHighScore)
 - Sprite Updates
   - Barrier sprites update but its pretty boring still
   - Update the arrow sprite
+  - Create 'A' and 'B' Button Sprites
 - Improve menuing system
   - Replace SDK Example Assets
 - Add sounds
@@ -36,6 +36,7 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
       - Selecting an option/level
 - Investigations
   - Changing the menu button items during runtime
+  - Setting column count by section or row instead of the whole gridview
 
 ### Current Progress
 
@@ -47,11 +48,14 @@ In-Game Screenshot
 <!--![5/1/2022 In-Game Screenshot](resource/screenshots/playdate-20220501-222305.png)-->
 ![5/4/2022 In-Game Screenshot](resource/screenshots/playdate-20220504-012106.png)
 
-Menu Screenshot 
+Level Select Screenshot 
 
 <!--![5/3/2022 Menu Screenshot](resource/screenshots/playdate-20220503-015607.png)-->
 <!--![5/4/2022 Menu Screenshot](resource/screenshots/playdate-20220504-014448.png)-->
 ![5/4/2022 Menu Screenshot](resource/screenshots/playdate-20220504-232925.png)
+
+Level Complete Screenshot
+![5/5/2022 Menu Screenshot](resource/screenshots/playdate-20220505-235113.png)
 
 *(see TODO for note about SDK Assets)*
 

@@ -55,7 +55,8 @@ Level Select Screenshot
 ![5/4/2022 Menu Screenshot](resource/screenshots/playdate-20220504-232925.png)
 
 Level Complete Screenshot
-![5/5/2022 Menu Screenshot](resource/screenshots/playdate-20220505-235113.png)
+
+![5/5/2022 Level Complete Screenshot](resource/screenshots/playdate-20220505-235113.png)
 
 *(see TODO for note about SDK Assets)*
 

@@ -199,8 +199,8 @@ function fireBobble()
             )
         )
         -- picks the type of bobble for the next shot
-        nextBobble = math.random(1,3)
-        --nextBobble = 3 --debug
+        --nextBobble = math.random(1,3)
+        nextBobble = 3 --debug
         -- resets the preview bobble so it displays accurately
         previewSprite:remove()
         previewSprite = nil
@@ -399,7 +399,6 @@ function myGameSetUp()
     gridview:setContentInset(1, 4, 1, 4)
     gridview:setCellPadding(4, 4, 4, 4)
     gridview.changeRowOnColumnWrap = true
-
 end
 
 -- Now we'll call the function above to configure our game.
@@ -550,15 +549,27 @@ function playdate.update()
         end
     elseif view == 2 then
         -- Game Complete UI
+        
         gfx.setColor(gfx.kColorWhite)
         gfx.fillRect(40,40,320,160)
         gfx.setColor(gfx.kColorBlack)
         --gfx.drawText(, 200,120, kTextAlignment.center)
         gfx.drawTextInRect("LEVEL COMPLETE", 40, 75, 320, 160, nil, nil, kTextAlignment.center)
         gfx.drawTextInRect("SCORE: ", 40, 105, 320, 160, nil, nil, kTextAlignment.center)
-        -- Draw A button here centered above LEVEL SELECT
+
+        
+        if playdate.buttonIsPressed(playdate.kButtonA) then
+            gfx.fillRoundRect(63, 130, 110, 50, 4)
+        end
+        buttonA = gfx.image.new("images/buttonA")
+        buttonA:draw(110, 140)
         gfx.drawTextInRect("LEVEL SELECT ", 40, 165, 160, 160, nil, nil, kTextAlignment.center)
-        -- Draw B button here centered above RETRY LEVEL
+        
+        if playdate.buttonIsPressed(playdate.kButtonB) then
+            gfx.fillRoundRect(223, 130, 110, 50, 4)
+        end
+        buttonB = gfx.image.new("images/buttonB")
+        buttonB:draw(270, 140)
         gfx.drawTextInRect("RETRY LEVEL ", 160, 165, 240, 160, nil, nil, kTextAlignment.center)
     elseif view == 3 then
         -- Game Failed UI

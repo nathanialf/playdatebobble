@@ -59,7 +59,6 @@ local lastTime = playdate.getCurrentTimeMilliseconds()
 -- 0 = Level select
 -- 1 = In Level
 -- 2 = Level Complete
--- 3 = Level Failed
 local view = 0
 
 -- Menu stuff
@@ -71,8 +70,11 @@ gridFont:setTracking(1)
 
 gridview = playdate.ui.gridview.new(44, 44)
 
+slice = playdate.graphics.nineSlice.new('images/shadowbox', 4, 4, 45, 45)
+
 -- Menu structure
 levels = {}
+scores = {}
 currentLevel = ""
 
 -- OVERRIDE
@@ -93,8 +95,8 @@ function gridview:drawCell(section, row, column, selected, x, y, width, height)
         if levels[i][1] == section and
         levels[i][2] == row and
         levels[i][3] == column and
-        levels[i][5] > 0 then
-            gfx.drawTextInRect(""..levels[i][5], x, y+35, width, 20, nil, nil, kTextAlignment.right)
+        scores[levels[i][4]] ~= nil then
+            gfx.drawTextInRect(""..scores[levels[i][4]], x, y+35, width, 20, nil, nil, kTextAlignment.right)
         end
     end
 
@@ -199,8 +201,8 @@ function fireBobble()
             )
         )
         -- picks the type of bobble for the next shot
-        --nextBobble = math.random(1,3)
-        nextBobble = 3 --debug
+        nextBobble = math.random(1,3)
+        --nextBobble = 3 -- DEBUG Easy to complete 1-1-1
         -- resets the preview bobble so it displays accurately
         previewSprite:remove()
         previewSprite = nil
@@ -261,7 +263,6 @@ function loadLevel(levelFileName)
 
     -- picks the type of bobble for the next shot
     nextBobble = math.random(1,3)
-    --nextBobble = 3 --debug
     -- resets the preview bobble so it displays accurately
     previewSprite:remove()
     previewSprite = nil
@@ -281,12 +282,12 @@ function removeAllBobbles()
     end
 end
 
--- Updates the high scores
+-- Updates the high scores in the table and saves to the datastore
 function updateHighScore(currentLevel, shotsFired)
-    -- if levels[i of currentLevel][5] == 0 or shotsFired < levels[i of currentLevel][5] then
-    -- levels[i of currentLevel][5] = shotsFired
-    -- write to menu.lvl at line of currentLevel
-    -- end
+    if scores[currentLevel] == nil or shotsFired < scores[currentLevel] then
+        scores[currentLevel] = shotsFired
+        playdate.datastore.write(scores)
+    end
 end
 
 -- A function to set up our game environment.
@@ -356,7 +357,7 @@ function myGameSetUp()
     repeat
         local l = file:readline()
         if l then
-            --<section> <row> <column> <filename> <highscore>
+            --<section> <row> <column> <filename>
             local result = {};
             for match in (l.." "):gmatch("(.-)".." ") do
                 table.insert(result, match);
@@ -369,7 +370,6 @@ function myGameSetUp()
                     tonumber(result[2]),
                     tonumber(result[3]),
                     result[4],
-                    tonumber(result[5]),
                 }
             )
             -- Finds the largest column number because we can only set it for across the whole gridview for some reason
@@ -384,9 +384,19 @@ function myGameSetUp()
     until l == nil
     file:close()
 
-    -- TODO: Set automatically based on contents of levels/menu.lvl
+    -- Scores table
+    -- <filename> <lowest score>
+    -- If it exists in the datastore, we will use it as the scores table and update during play,
+    -- if not, it will remain an empty table.
+    -- nil checks are made when checking for score update
+    if playdate.datastore.read() ~= nil then
+        scores = playdate.datastore.read()
+    end
+    -- 
+
+    -- Level Select cell data
     -- GRIPE: Cant set Number of Columns by section
-    gridview.backgroundImage = playdate.graphics.nineSlice.new('images/shadowbox', 4, 4, 45, 45)
+    gridview.backgroundImage = slice
     gridview:setNumberOfColumns(biggestCol)
     --gridview:setNumberOfRows(1, 1) -- number of sections is set automatically
     for i=1,#rowCount
@@ -513,8 +523,6 @@ function playdate.update()
         end
     elseif view == 2 then
         -- Game Complete
-    elseif view == 3 then
-        -- Game Failed
     end
 
     -- Call the functions below in playdate.update() to draw sprites and keep
@@ -530,16 +538,10 @@ function playdate.update()
         gridview:drawInRect(10, 10, 380, 220)
     elseif view == 1 then
         -- In level UI
+        gfx.drawText(""..shotsFired, 5, 5)
         if #bobbles == 0 then
             -- LEVEL IS BEAT
-            -- Apply score to a file
-            -- Score isnt defined yet, probably will be time and shots fired
-            -- NOTE: This needs to be placed after the  gfx.sprite.update()
-            gfx.drawText("*Level Complete*", 40, 40)
             view = 2
-            --currentLevel = ""
-            --shotsFired = 0
-            --view = 2
         else 
             -- Displays the crank indicator
             -- NOTE: This needs to be placed after the updateTimers()
@@ -549,30 +551,30 @@ function playdate.update()
         end
     elseif view == 2 then
         -- Game Complete UI
-        
-        gfx.setColor(gfx.kColorWhite)
-        gfx.fillRect(40,40,320,160)
-        gfx.setColor(gfx.kColorBlack)
+        -- Draw Nineslice
+        slice:drawInRect(40,40,320,160)
         --gfx.drawText(, 200,120, kTextAlignment.center)
-        gfx.drawTextInRect("LEVEL COMPLETE", 40, 75, 320, 160, nil, nil, kTextAlignment.center)
-        gfx.drawTextInRect("SCORE: ", 40, 105, 320, 160, nil, nil, kTextAlignment.center)
 
-        
+        gfx.drawTextInRect("LEVEL COMPLETE", 40, 75, 320, 160, nil, nil, kTextAlignment.center)
+        gfx.drawTextInRect("SCORE: "..shotsFired, 40, 105, 320, 160, nil, nil, kTextAlignment.center)
+
+        -- Draw Level Select
         if playdate.buttonIsPressed(playdate.kButtonA) then
+            -- Draws black box underneath selected option when button is down
             gfx.fillRoundRect(63, 130, 110, 50, 4)
         end
         buttonA = gfx.image.new("images/buttonA")
         buttonA:draw(110, 140)
         gfx.drawTextInRect("LEVEL SELECT ", 40, 165, 160, 160, nil, nil, kTextAlignment.center)
         
+        -- Draw Retry Level
         if playdate.buttonIsPressed(playdate.kButtonB) then
+            -- Draws black box underneath selected option when button is down
             gfx.fillRoundRect(223, 130, 110, 50, 4)
         end
         buttonB = gfx.image.new("images/buttonB")
         buttonB:draw(270, 140)
         gfx.drawTextInRect("RETRY LEVEL ", 160, 165, 240, 160, nil, nil, kTextAlignment.center)
-    elseif view == 3 then
-        -- Game Failed UI
     end
 end
 
@@ -593,6 +595,8 @@ end)
 
 -- Switches back to level select if in game
 local menuItem, error = menu:addMenuItem("Level Select", function()
+    -- view = 2 -- DEBUG easy access to level complete screen
+                -- Retry Level button will NOT work when accessing this way
     if view == 1 then
         print("Level Select")
         removeAllBobbles()
@@ -600,5 +604,13 @@ local menuItem, error = menu:addMenuItem("Level Select", function()
         currentLevel = ""
         shotsFired = 0
         view = 0
+    end
+end)
+
+-- Delete level scores
+local menuItem, error = menu:addMenuItem("Delete Scores", function()
+    if view == 0 then
+        playdate.datastore.delete()
+        scores = {}
     end
 end)

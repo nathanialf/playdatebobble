@@ -13,15 +13,10 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
 
 ### TODO
 - Add safegaurds for malformed level files
-- Levels
-  - view = 3 for Level failed
-    - might be able to do the same view for beat and failed but I don't have a fail state decided yet
-  - Save high score (pseudo-coded in updateHighScore)
 - Sprite Updates
   - Barrier sprites update but its pretty boring still
   - Update the arrow sprite
-- Improve menuing system
-  - Replace SDK Example Assets
+- Replace SDK Example Assets
 - Add sounds
   - https://play.date/pulp/ For quick and easy (allegedly) sound creation
   - Needed
@@ -33,6 +28,7 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
       - Move cursor/change level
       - Selecting an option/level
 - Change bobbles and barriers to extend sprites and cut out some unnecessary complications with the objects and collisions
+- Add more levels
 - Investigations
   - Changing the menu button items during runtime
   - Setting column count by section or row instead of the whole gridview
@@ -69,3 +65,5 @@ Extra stuff that would be nice to do but not currently in the scope of the proje
     - Building by hand is far too time consuming when adding all neighbor pairs
 - Display current score and level on the menu image
   - https://sdk.play.date/1.10.0/Inside%20Playdate.html#f-setMenuImage
+- Add pop-ups when you try to use menu items outside of their intended view
+  - Example: "Unable to Delete Scores, please try again from Level Select" when in a level

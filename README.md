@@ -16,6 +16,7 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
 - Sprite Updates
   - Barrier sprites update but its pretty boring still
   - Update the arrow sprite
+  - Launch Images/Cards
 - Replace SDK Example Assets
 - Add sounds
   - https://play.date/pulp/ For quick and easy (allegedly) sound creation
@@ -52,7 +53,8 @@ Level Select Screenshot
 Level Complete Screenshot
 
 <!--![5/5/2022 Level Complete Screenshot](resource/screenshots/playdate-20220505-235113.png)-->
-![5/6/2022 Level Complete Screenshot](resource/screenshots/playdate-20220506-013302.png)
+<!--![5/6/2022 Level Complete Screenshot](resource/screenshots/playdate-20220506-013302.png)-->
+![5/6/2022 Level Complete Screenshot](resource/screenshots/playdate-20220506-145714.png)
 
 *(see TODO for note about SDK Assets)*
 

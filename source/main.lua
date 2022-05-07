@@ -21,6 +21,9 @@ import "barrier"
 
 local gfx <const> = playdate.graphics
 
+-- Turns on all DEBUG changes for testing
+local DEBUG = false
+
 -- Here's our player sprite declaration. We'll scope it to this file because
 -- several functions need to access it.
 
@@ -201,8 +204,11 @@ function fireBobble()
             )
         )
         -- picks the type of bobble for the next shot
-        nextBobble = math.random(1,3)
-        --nextBobble = 3 -- DEBUG Easy to complete 1-1-1
+        if DEBUG then
+            nextBobble = 3 -- DEBUG Easy to complete 1-1-1
+        else
+            nextBobble = math.random(1,3)
+        end
         -- resets the preview bobble so it displays accurately
         previewSprite:remove()
         previewSprite = nil
@@ -262,7 +268,11 @@ function loadLevel(levelFileName)
     view = 1
 
     -- picks the type of bobble for the next shot
-    nextBobble = math.random(1,3)
+    if DEBUG then
+        nextBobble = 3 -- DEBUG Easy to complete 1-1-1
+    else
+        nextBobble = math.random(1,3)
+    end
     -- resets the preview bobble so it displays accurately
     previewSprite:remove()
     previewSprite = nil
@@ -595,8 +605,10 @@ end)
 
 -- Switches back to level select if in game
 local menuItem, error = menu:addMenuItem("Level Select", function()
-    -- view = 2 -- DEBUG easy access to level complete screen
-                -- Retry Level button will NOT work when accessing this way
+    if DEBUG then
+        view = 2 -- DEBUG easy access to level complete screen
+                 -- Retry Level button will NOT work when accessing this way
+    end
     if view == 1 then
         print("Level Select")
         removeAllBobbles()

@@ -61,6 +61,10 @@ Level Complete Screenshot
 ### Stretch Goals
 Extra stuff that would be nice to do but not currently in the scope of the project
 - Have grouped up bobbles and their "children" drop off the screen
+  - Have a boolean on bobble if its collided with a sticky wall turn true
+  - Search each bobble to see if there are any sets of bobbles disconnected from the wall
+  - BLOCKED BY: Change bobble and barrier objects to extend sprites
+    - No sense in trying to continue to add on to issues with this system when i can clean it up first
 - Add extra barriers in level files
 - Build a level editor
     - PC based, not playdate based

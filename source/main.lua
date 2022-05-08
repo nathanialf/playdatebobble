@@ -566,7 +566,11 @@ function playdate.update()
         --gfx.drawText(, 200,120, kTextAlignment.center)
 
         gfx.drawTextInRect("LEVEL COMPLETE", 40, 75, 320, 160, nil, nil, kTextAlignment.center)
-        gfx.drawTextInRect("SCORE: "..shotsFired, 40, 105, 320, 160, nil, nil, kTextAlignment.center)
+        if scores[currentLevel] == nil or shotsFired < scores[currentLevel] then
+            gfx.drawTextInRect("NEW HIGH SCORE: "..shotsFired, 40, 105, 320, 160, nil, nil, kTextAlignment.center)
+        else
+            gfx.drawTextInRect("SCORE: "..shotsFired, 40, 105, 320, 160, nil, nil, kTextAlignment.center)
+        end
 
         -- Draw Level Select
         if playdate.buttonIsPressed(playdate.kButtonA) then

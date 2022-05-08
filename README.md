@@ -33,6 +33,11 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
 - Investigations
   - Changing the menu button items during runtime
   - Setting column count by section or row instead of the whole gridview
+- Tutorial
+  - Add view for display how to play the game
+- QOL
+  - Make Font bigger
+    - Totally fine looking on simulator but not very clear on hard ware
 
 ### Current Progress
 

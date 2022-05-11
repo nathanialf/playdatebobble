@@ -1,46 +1,18 @@
-Building a puzzle bobble-like game for the Playdate Console.
+A puzzle bobble-like game for the Playdate Console.
 
-Learning how to use lua during the process as well
+I got the [Playdate](https://play.date) Console in my hands and thought it would be fun to learn to develop something for the device. It was also a chance for me to learn Lua since I've seen mentions of it for a long time but never had a reason to try to learn it.
 
-### Compile
-- Set up PlayDate SDK - https://play.date/dev/
-- From the root directory of the repo
-```
-pdc -v source build/playdatebobble.pdx
-```
+### Game Contents
+Not much, to be honest.
 
-Fun fact: Running the pdx file in the simulator from a network share does NOT work. The errors don't make sense.
+- It boots into the Level Select and has a couple of test levels to choose from.
+- You play the game by aiming an arm to shoot and destroy all bobbles. Aiming is done with the crank on the console.
+- Completing the level gives you a score based on the number of shots fired. The lowest score is saved and displayed in level select.
+- Options to restart the level, go back to level select and delete save game data are found when pressing the "Menu" button on the device or simulator.
 
-### TODO
-- BUGS
-  - 1px black line appeared horizontally across the screen around firing the 70th bobble on 1-1-2
-- QOL
-  - Make Font bigger
-    - Totally fine looking on simulator but not very clear on hard ware
-- Tutorial
-  - Add view for display how to play the game
-- Code Quality
-  - Add safegaurds for malformed level files
-  - Change bobbles and barriers to extend sprites and cut out some unnecessary complications with the objects and collisions
-- Sprite Updates
-  - Barrier sprites update but its pretty boring still
-  - Update the arrow sprite
-  - Launch Images/Cards
-- Art/Sound
-  - Replace SDK Example Assets
-  - https://play.date/pulp/ For quick and easy (allegedly) sound creation
-  - Needed
-    - Sounds when hitting a barrier
-    - Sounds when hitting a bobble
-    - Sounds when popping bobbles
-    - Song to play in the background
-    - Menuing sounds
-      - Move cursor/change level
-      - Selecting an option/level
-- Investigations
-  - Changing the menu button items during runtime
-  - Setting column count by section or row instead of the whole gridview
-- Add more levels (Possibly through Level editor in Stretch Goals section)
+New levels should definitely be made, but manually setting up the file is cumbersome. Building a level editor is a stretch goal.
+
+Continued additions and goals are listed further down.
 
 ### Current Progress
 
@@ -65,6 +37,48 @@ Level Complete Screenshot
 ![5/6/2022 Level Complete Screenshot](resource/screenshots/playdate-20220506-145714.png)
 
 *(see TODO for note about SDK Assets)*
+
+### Compile
+- Set up PlayDate SDK - https://play.date/dev/
+- From the root directory of the repo
+```
+pdc -v source build/playdatebobble.pdx
+```
+- Drag pdx file into the simulator to start playing or to sideload to physical device
+
+Fun fact: Running the pdx file in the simulator from a network share does NOT work. The errors don't make sense.
+
+### TODO
+- Tutorial
+  - Add view for display how to play the game
+- Code Quality
+  - Add safegaurds for malformed level files
+  - Refactor bobbles and barriers to extend sprites and cut out some unnecessary complications with the objects and collisions
+- Art
+  - Sprite Updates
+    - Barrier sprites update but its pretty boring still
+    - Update the arrow sprite
+    - Launch Images/Cards
+  - Replace SDK Example Assets
+    - Make Font bigger
+      - Totally fine looking on simulator but not very clear on hardware
+      - https://play.date/caps/
+  - Tutorial images will need to be made for illustrating controls. 
+  - Proper card image
+- Sounds
+  - https://play.date/pulp/ For quick and easy (allegedly) sound creation
+  - Needed assets
+    - Sounds when hitting a barrier
+    - Sounds when hitting a bobble
+    - Sounds when popping bobbles
+    - Song to play in the background
+    - Menuing sounds
+      - Move cursor/change level
+      - Selecting an option/level
+- Investigations
+  - Changing the menu button items during runtime
+  - Setting column count by section or row instead of the whole gridview
+- Add more levels (Possibly through Level editor in Stretch Goals section)
 
 ### Stretch Goals
 Extra stuff that would be nice to do but not currently in the scope of the project

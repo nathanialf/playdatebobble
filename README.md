@@ -18,6 +18,10 @@ Continued additions and goals are listed further down.
 
 - Works on personal PlayDate console and simulator
 
+Tutorial Screenshot
+
+![5/12/2022 Tutorial Screenshot](resource/screenshots/playdate-20220512-152435.png)
+
 In-Game Screenshot
 <!--![4/27/2022 Screenshot](resource/screenshots/playdate-20220427-233610.png)-->
 <!--![4/28/2022 Screenshot](resource/screenshots/playdate-20220428-175705.png)-->
@@ -49,11 +53,8 @@ pdc -v source build/playdatebobble.pdx
 Fun fact: Running the pdx file in the simulator from a network share does NOT work. The errors don't make sense.
 
 ### TODO
-- Tutorial
-  - Add view for display how to play the game
 - Code Quality
   - Add safegaurds for malformed level files
-  - Try to move some additional code out of main to make it more clear
 - Art
   - Sprite Updates
     - Barrier sprites update but its pretty boring still
@@ -75,9 +76,6 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
     - Menuing sounds
       - Move cursor/change level
       - Selecting an option/level
-- Investigations
-  - Changing the menu button items during runtime
-  - Setting column count by section or row instead of the whole gridview
 - Add more levels (Possibly through Level editor in Stretch Goals section)
 
 ### Stretch Goals

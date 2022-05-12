@@ -38,7 +38,8 @@ local lastTime = playdate.getCurrentTimeMilliseconds()
 -- 0 = Level select
 -- 1 = In Level
 -- 2 = Level Complete
-local view = 0
+-- 3 = Tutorial
+local view = 3
 
 -- Menu stuff
 -- From Menu example in SDK
@@ -109,6 +110,8 @@ function playdate.AButtonUp()
         -- Changes back to the level select view
         currentLevel = ""
         shotsFired = 0
+        view = 0
+    elseif view == 3 then
         view = 0
     end
 end
@@ -529,6 +532,12 @@ function playdate.update()
         buttonB = gfx.image.new("images/buttonB")
         buttonB:draw(270, 140)
         gfx.drawTextInRect("RETRY LEVEL ", 160, 165, 240, 160, nil, nil, kTextAlignment.center)
+    elseif view == 3 then
+        slice:drawInRect(40,40,320,160)
+        gfx.drawTextInRect("USE D-PAD TO FIRE THE BOBBLE", 40, 75, 320, 160, nil, nil, kTextAlignment.center)
+        gfx.drawTextInRect("USE THE CRANK TO AIM", 40, 100, 320, 160, nil, nil, kTextAlignment.center)
+        gfx.drawTextInRect("PRESS A TO DISMISS", 40, 150, 320, 160, nil, nil, kTextAlignment.center)
+        playdate.ui.crankIndicator:update()
     end
 end
 

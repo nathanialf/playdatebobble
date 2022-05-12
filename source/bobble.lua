@@ -19,7 +19,7 @@ function Bobble:createStationary(type, x, y)
     bble.speedY = 0
     bble.type = type
 
-    createSprite(bble, type)
+    bble:createSprite(type)
     
     bble:moveTo( x, y ) 
     bble:addSprite()
@@ -40,7 +40,7 @@ function Bobble:create(type, x, y, angle)
 
     bble.isMoving = true
 
-    createSprite(bble, type)
+    bble:createSprite(type)
     
     bble:moveTo( x, y ) 
     bble:addSprite()
@@ -48,36 +48,36 @@ function Bobble:create(type, x, y, angle)
     return bble
 end
 
-function createSprite(bble, type)
+function Bobble:createSprite(type)
 
     local bobbleImage = gfx.image.new("images/bobble" .. tostring(type))
     assert( bobbleImage ) -- make sure the image was where we thought
-    bble:setImage( bobbleImage )
+    self:setImage( bobbleImage )
     
     -- Type is an integer that can only be 1,2 or 3
-    bble.type = type
+    self.type = type
 
     -- used to tell what the object is during collisions
-    bble.entity = constants.kBOBBLE
+    self.entity = constants.kBOBBLE
 
     -- Sets opacity
-    bble:setOpaque(false)
+    self:setOpaque(false)
 
     -- collision rect is set to the sprites location and dimensions
-    bble:setCollideRect(0, 0, bble:getSize())
+    self:setCollideRect(0, 0, self:getSize())
     -- sets the collision group this object is in
-    bble:setGroups(constants.kBOBBLE)
+    self:setGroups(constants.kBOBBLE)
     -- sets what collision groups this object can collide
-    bble:setCollidesWithGroups({constants.kBOBBLE, constants.kBARRIER})
+    self:setCollidesWithGroups({constants.kBOBBLE, constants.kBARRIER})
     -- sets if we can should try to pop the bobble
-    bble.poppable = false
+    self.poppable = false
 
     -- Neighbors of bobbles to check for popping
-    bble.neighbors = {}
+    self.neighbors = {}
 end
 
 -- called when the bobble collides with another of the same type
-function playdate.graphics.sprite:setPoppableOnCollision()
+function Bobble:setPoppableOnCollision()
     self.poppable = true
     -- Sets poppable to be true on all neighbors of the same type
     for i=1,#(self.neighbors)

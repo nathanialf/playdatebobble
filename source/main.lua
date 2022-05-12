@@ -254,8 +254,8 @@ function loadLevel(levelFileName)
                 )
             elseif result[1] == "N" then
                 table.insert(
-                    bobbles[tonumber(result[2])].bobbleSprite.neighbors, 
-                    bobbles[tonumber(result[3])].bobbleSprite
+                    bobbles[tonumber(result[2])].neighbors, 
+                    bobbles[tonumber(result[3])]
                 )
             end
         end
@@ -282,12 +282,12 @@ end
 function removeAllBobbles()
     -- Removes bobbles
     for i=#bobbles,1,-1 do
-        for j=#bobbles[i].bobbleSprite.neighbors,1,-1
+        for j=#bobbles[i].neighbors,1,-1
         do
-            bobbles[i].bobbleSprite.neighbors[j]:remove()
-            table.remove(bobbles[i].bobbleSprite.neighbors, j)
+            bobbles[i].neighbors[j]:remove()
+            table.remove(bobbles[i].neighbors, j)
         end
-        bobbles[i].bobbleSprite:remove()
+        bobbles[i]:remove()
         table.remove(bobbles, i)
     end
 end
@@ -335,11 +335,6 @@ function myGameSetUp()
     barriers[1] = Barrier:create(10, 120, false, true)
     barriers[2] = Barrier:create(200, 230, true, false)
     barriers[3] = Barrier:create(200, 10, true, false)
-    barriers[4] = Barrier:create(420, 120, false, false)
-
-    -- loads a level
-    --loadLevel("levels/test.lvl")
-    --loadLevel("levels/test_easy.lvl")
 
     -- We want an environment displayed behind our sprite.
     -- There are generally two ways to do this:
@@ -489,7 +484,7 @@ function playdate.update()
         local count = 0
         for i=1,#bobbles
         do
-            if bobbles[i].bobbleSprite.poppable then
+            if bobbles[i].poppable then
                 count = count + 1
             end
         end
@@ -497,37 +492,38 @@ function playdate.update()
             -- Remove from neighbors arrays
             for i=1,#bobbles
             do
-                for j=#bobbles[i].bobbleSprite.neighbors,1,-1
+                for j=#bobbles[i].neighbors,1,-1
                 do
-                    if bobbles[i].bobbleSprite.neighbors[j].poppable then
-                        bobbles[i].bobbleSprite.neighbors[j]:remove()
-                        table.remove(bobbles[i].bobbleSprite.neighbors, j)
+                    if bobbles[i].neighbors[j].poppable then
+                        bobbles[i].neighbors[j]:remove()
+                        table.remove(bobbles[i].neighbors, j)
                     end
                 end
             end
             -- Remove from bobbles array
             for i=#bobbles,1,-1
             do
-                if bobbles[i].bobbleSprite.poppable then
-                    bobbles[i].bobbleSprite:remove()
+                if bobbles[i].poppable then
+                    bobbles[i]:remove()
                     table.remove(bobbles, i)
                 end
             end
             for i=1,#bobbles
             do
-                bobbles[i].bobbleSprite.poppable = false
-                for j=1,#bobbles[i].bobbleSprite.neighbors
+                bobbles[i].poppable = false
+                for j=1,#bobbles[i].neighbors
                 do
-                    bobbles[i].bobbleSprite.neighbors[j].poppable = false
+                    bobbles[i].neighbors[j].poppable = false
                 end
-            end 
+            end
+            -- Check for free hanging bobbles (not attached to a sticky wall) and remove them
         else
             for i=1,#bobbles
             do
-                bobbles[i].bobbleSprite.poppable = false
-                for j=1,#bobbles[i].bobbleSprite.neighbors
+                bobbles[i].poppable = false
+                for j=1,#bobbles[i].neighbors
                 do
-                    bobbles[i].bobbleSprite.neighbors[j].poppable = false
+                    bobbles[i].neighbors[j].poppable = false
                 end
             end 
         end

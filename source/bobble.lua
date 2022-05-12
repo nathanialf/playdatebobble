@@ -6,17 +6,15 @@ import "CoreLibs/ui"
 
 local gfx <const> = playdate.graphics
 
-Bobble = {}
-Bobble.__index = Bobble
+class('Bobble').extends(playdate.graphics.sprite)
 
 local kBobble = 1
 local kBarrier = 2
 
 -- constructor for level bobbles
 function Bobble:createStationary(type, x, y)
-    local bble = {}
-    
-    setmetatable(bble, Bobble)
+    local bble = Bobble()
+
     --ensures the bobbles wont move
     bble.isMoving = false
     bble.angle = 0
@@ -24,19 +22,18 @@ function Bobble:createStationary(type, x, y)
     bble.speedY = 0
     bble.type = type
 
-    bble.bobbleSprite = createBobbleSprite(type)
+    createSprite(bble, type)
     
-    bble.bobbleSprite:moveTo( x, y ) 
-    bble.bobbleSprite:add()
+    bble:moveTo( x, y ) 
+    bble:addSprite()
 
     return bble
 end
 
 -- constructor for the fired bobbles
 function Bobble:create(type, x, y, angle)
-    local bble = {}
+    local bble = Bobble()
     
-    setmetatable(bble, Bobble)
     -- firing angle the bobble will move at
     bble.angle = angle
     -- speed the bobble will move at in each axis
@@ -46,42 +43,40 @@ function Bobble:create(type, x, y, angle)
 
     bble.isMoving = true
 
-    bble.bobbleSprite = createBobbleSprite(type)
+    createSprite(bble, type)
     
-    bble.bobbleSprite:moveTo( x, y ) 
-    bble.bobbleSprite:add()
+    bble:moveTo( x, y ) 
+    bble:addSprite()
 
     return bble
 end
 
-function createBobbleSprite(type)
+function createSprite(bble, type)
 
     local bobbleImage = gfx.image.new("images/bobble" .. tostring(type))
     assert( bobbleImage ) -- make sure the image was where we thought
-    bobbleSprite = gfx.sprite.new( bobbleImage )
+    bble:setImage( bobbleImage )
     
     -- Type is an integer that can only be 1,2 or 3
-    bobbleSprite.type = type
+    bble.type = type
 
     -- used to tell what the object is during collisions
-    bobbleSprite.entity = kBobble
+    bble.entity = kBobble
 
     -- Sets opacity
-    bobbleSprite:setOpaque(false)
+    bble:setOpaque(false)
 
     -- collision rect is set to the sprites location and dimensions
-    bobbleSprite:setCollideRect(0, 0, bobbleSprite:getSize())
+    bble:setCollideRect(0, 0, bble:getSize())
     -- sets the collision group this object is in
-    bobbleSprite:setGroups(kBobble)
+    bble:setGroups(kBobble)
     -- sets what collision groups this object can collide
-    bobbleSprite:setCollidesWithGroups({kBobble, kBarrier})
+    bble:setCollidesWithGroups({kBobble, kBarrier})
     -- sets if we can should try to pop the bobble
-    bobbleSprite.poppable = false
+    bble.poppable = false
 
     -- Neighbors of bobbles to check for popping
-    bobbleSprite.neighbors = {}
-
-    return bobbleSprite
+    bble.neighbors = {}
 end
 
 -- called when the bobble collides with another of the same type
@@ -103,8 +98,8 @@ function Bobble:move(deltaTime)
     if self.isMoving then
         local velocX = -math.cos(math.rad(self.angle)) * self.speedX * deltaTime
         local velocY = -math.sin(math.rad(self.angle)) * self.speedY * deltaTime
-        local spriteX, spriteY, spriteWidth, spriteHeight = self.bobbleSprite:getPosition()
-        local actualX, actualY, collisions, collisionCount = self.bobbleSprite:moveWithCollisions(spriteX + velocX, spriteY + velocY)
+        local spriteX, spriteY, spriteWidth, spriteHeight = self:getPosition()
+        local actualX, actualY, collisions, collisionCount = self:moveWithCollisions(spriteX + velocX, spriteY + velocY)
         
         for i=1, collisionCount do
             local collision = collisions[i]
@@ -122,10 +117,10 @@ function Bobble:move(deltaTime)
                 -- Check Collisions for popping bobbles
                 if collision.other.entity == kBobble then
                     -- Add to neighborhood
-                    self.bobbleSprite.neighbors[#self.bobbleSprite.neighbors + 1] = collision.other
-                    collision.other.neighbors[#collision.other.neighbors + 1] = self.bobbleSprite
+                    self.neighbors[#self.neighbors + 1] = collision.other
+                    collision.other.neighbors[#collision.other.neighbors + 1] = self
                     -- Check for pops
-                    self.bobbleSprite:setPoppableOnCollision()
+                    self:setPoppableOnCollision()
                 end
             end
         end

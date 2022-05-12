@@ -53,7 +53,7 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
   - Add view for display how to play the game
 - Code Quality
   - Add safegaurds for malformed level files
-  - Refactor bobbles and barriers to extend sprites and cut out some unnecessary complications with the objects and collisions
+  - Try to move some additional code out of main to make it more clear
 - Art
   - Sprite Updates
     - Barrier sprites update but its pretty boring still
@@ -84,9 +84,8 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
 Extra stuff that would be nice to do but not currently in the scope of the project
 - Have grouped up bobbles and their "children" drop off the screen
   - Have a boolean on bobble if its collided with a sticky wall turn true
+  - Add support for said boolean in the level files to set initial sticky bobbles
   - Search each bobble to see if there are any sets of bobbles disconnected from the wall
-  - BLOCKED BY: Change bobble and barrier objects to extend sprites
-    - No sense in trying to continue to add on to issues with this system when i can clean it up first
 - Add extra barriers in level files
 - Build a level editor
     - PC based, not playdate based

@@ -6,15 +6,15 @@ import "CoreLibs/ui"
 
 local gfx <const> = playdate.graphics
 
-Barrier = {}
-Barrier.__index = Barrier
+class('Barrier').extends(playdate.graphics.sprite)
 
 local kBobble = 1
 local kBarrier = 2
 
+
 -- Constructor
 function Barrier:create(x, y, isHorizontal, isSticky)
-    local barr = {}
+    local barr = Barrier()
 
     local barrierImage
     if isSticky then
@@ -25,34 +25,33 @@ function Barrier:create(x, y, isHorizontal, isSticky)
 
     assert( barrierImage ) -- make sure the image was where we thought
     
-    setmetatable(barr, Barrier)
     barr.isHorizontal = isHorizontal
-    barr.barrierSprite = gfx.sprite.new( barrierImage )
-    barr.barrierSprite.isSticky = isSticky
+    barr:setImage( barrierImage )
+    barr.isSticky = isSticky
 
     -- Sets opacity
     -- Unused but just in case it ends up being used and I forget
-    barr.barrierSprite:setOpaque(true)
+    barr:setOpaque(true)
 
-    barr.barrierSprite:moveTo( x, y ) 
-    barr.barrierSprite:add()
+    barr:moveTo( x, y ) 
+    barr:addSprite()
     
     -- used to tell what the object is during collisions
-    barr.barrierSprite.entity = kBarrier
+    barr.entity = kBarrier
 
     -- sets the collision group this object is in
-    barr.barrierSprite:setGroups(kBarrier)
+    barr:setGroups(kBarrier)
     if not isHorizontal then
-        barr.barrierSprite:setRotation(90)
+        barr:setRotation(90)
     end
 
     -- collision rect is set to the sprites location and dimensions
-    barr.barrierSprite:setCollideRect(0, 0, barr.barrierSprite:getSize())
+    barr:setCollideRect(0, 0, barr:getSize())
 
     -- sets the collision type depending on the if it is sticky or not
     if isSticky then
-        barr.barrierSprite.collisionResponse = gfx.sprite.kCollisionTypeFreeze
+        barr.collisionResponse = gfx.sprite.kCollisionTypeFreeze
     else
-        barr.barrierSprite.collisionResponse = gfx.sprite.kCollisionTypeBounce
+        barr.collisionResponse = gfx.sprite.kCollisionTypeBounce
     end
 end

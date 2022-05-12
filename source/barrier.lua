@@ -8,10 +8,6 @@ local gfx <const> = playdate.graphics
 
 class('Barrier').extends(playdate.graphics.sprite)
 
-local kBobble = 1
-local kBarrier = 2
-
-
 -- Constructor
 function Barrier:create(x, y, isHorizontal, isSticky)
     local barr = Barrier()
@@ -37,10 +33,10 @@ function Barrier:create(x, y, isHorizontal, isSticky)
     barr:addSprite()
     
     -- used to tell what the object is during collisions
-    barr.entity = kBarrier
+    barr.entity = constants.kBARRIER
 
     -- sets the collision group this object is in
-    barr:setGroups(kBarrier)
+    barr:setGroups(constants.kBARRIER)
     if not isHorizontal then
         barr:setRotation(90)
     end

@@ -8,9 +8,6 @@ local gfx <const> = playdate.graphics
 
 class('Bobble').extends(playdate.graphics.sprite)
 
-local kBobble = 1
-local kBarrier = 2
-
 -- constructor for level bobbles
 function Bobble:createStationary(type, x, y)
     local bble = Bobble()
@@ -61,7 +58,7 @@ function createSprite(bble, type)
     bble.type = type
 
     -- used to tell what the object is during collisions
-    bble.entity = kBobble
+    bble.entity = constants.kBOBBLE
 
     -- Sets opacity
     bble:setOpaque(false)
@@ -69,9 +66,9 @@ function createSprite(bble, type)
     -- collision rect is set to the sprites location and dimensions
     bble:setCollideRect(0, 0, bble:getSize())
     -- sets the collision group this object is in
-    bble:setGroups(kBobble)
+    bble:setGroups(constants.kBOBBLE)
     -- sets what collision groups this object can collide
-    bble:setCollidesWithGroups({kBobble, kBarrier})
+    bble:setCollidesWithGroups({constants.kBOBBLE, constants.kBARRIER})
     -- sets if we can should try to pop the bobble
     bble.poppable = false
 
@@ -104,7 +101,7 @@ function Bobble:move(deltaTime)
         for i=1, collisionCount do
             local collision = collisions[i]
     
-            if collision.other.entity == kBarrier and not collision.other.isSticky then
+            if collision.other.entity == constants.kBARRIER and not collision.other.isSticky then
                 -- when a player or monster collides with anything just bounce off of it
                 if collision.normal.x ~= 0 then -- hit something in the X direction
                     self.speedX = -self.speedX
@@ -115,7 +112,7 @@ function Bobble:move(deltaTime)
             else
                 self.isMoving = false
                 -- Check Collisions for popping bobbles
-                if collision.other.entity == kBobble then
+                if collision.other.entity == constants.kBOBBLE then
                     -- Add to neighborhood
                     self.neighbors[#self.neighbors + 1] = collision.other
                     collision.other.neighbors[#collision.other.neighbors + 1] = self

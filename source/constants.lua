@@ -18,5 +18,5 @@ constants.Y_LOWER_BOUND = 28 -- 20 for the barrier and 8 is halfway through the 
 constants.Y_UPPER_BOUND = 212 -- 240 screen width, 20 for the barrier and 8 is halfway through the bobble
 
 -- Menu Strings
-constants.SETTINGS_MENU_OPTIONS = {"VIEW TUTORIAL", "DELETE SCORES", "EXIT"}
+constants.SETTINGS_MENU_OPTIONS = {"VIEW TUTORIAL", "DELETE SCORES", "INVERT COLORS", "EXIT"}
 constants.LEVEL_SECTION_NAMES = {"Test Levels", "Main Game"}

@@ -63,6 +63,12 @@ levels = {}
 scores = {}
 currentLevel = ""
 
+-- Settings table
+settings = {}
+-- Default Settings Values
+-- Sets the display buffer inversion
+settings.inverted = false
+
 local function animateListviewOpen()
         listviewTimer = playdate.timer.new(300, listviewHeight, 200, playdate.easingFunctions.outCubic)
 
@@ -135,8 +141,14 @@ function listview:drawCell(section, row, column, selected, x, y, width, height)
             scores = {}
             view = 0
         elseif row == 3 then
+            -- toggles the boolean and sets the function
+            settings.inverted = not settings.inverted
+            playdate.display.setInverted(settings.inverted)
+            -- Saves to datastore
+            playdate.datastore.write(settings, "settings")
+        elseif row == 4 then
             -- Go to Level Select
-            view = 1
+            view = 0
         else
         end
     end
@@ -436,6 +448,13 @@ function myGameSetUp()
     if playdate.datastore.read() ~= nil then
         scores = playdate.datastore.read()
     end
+    
+    -- Checks settings save information
+    if playdate.datastore.read("settings") ~= nil then
+        settings = playdate.datastore.read("settings")
+    end
+    -- sets the settings to their values after value is updated from the datastore
+    playdate.display.setInverted(settings.inverted)
 
     local biggestCol = 0
     local rowCount = {}

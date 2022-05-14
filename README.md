@@ -10,7 +10,7 @@ Not much, to be honest.
 - You play the game by aiming an arm to shoot and destroy all bobbles. Aiming is done with the crank on the console.
 - Completing the level gives you a score based on the number of shots fired. The lowest score is saved and displayed in level select.
 - Options to restart the level, go back to level select and go to settings are found when pressing the "Menu" button on the device or simulator.
-- You can delete your scores and view the tutorial again from the settings menu option
+- You can delete your scores, view the tutorial again, and invert colors from the settings menu option
 
 New levels should definitely be made, but manually setting up the file is cumbersome. Building a level editor is a stretch goal.
 
@@ -46,7 +46,8 @@ Level Complete Screenshot
 Setttings Screenshot
 
 <!--![5/14/2022 Level Complete Screenshot](resource/screenshots/playdate-20220514-103618.png)-->
-![5/14/2022 Level Complete Screenshot](resource/screenshots/playdate-20220514-123010.png)
+<!--![5/14/2022 Level Complete Screenshot](resource/screenshots/playdate-20220514-123010.png)-->
+![5/14/2022 Level Complete Screenshot](resource/screenshots/playdate-20220514-133709.png)
 
 *(see TODO for note about SDK Assets)*
 
@@ -62,16 +63,14 @@ Setttings Screenshot
 Fun fact: Running the pdx file in the simulator from a network share does NOT work. The errors don't make sense.
 
 ### TODO
-- Settings View
-  - Settings Options
-    - Maybe do the invert colors things
-      - Would require saving settings to a datastore
-    - Probably should add a confirmation on the delete scores option to prevent accidental presses
+- Build
+  - Change build script to take flags for build directory and pdx file name
 - Art
   - Sprite Updates
     - Barrier sprites update but its pretty boring still
     - Update the arrow sprite
     - Launch Images/Cards
+    - Bobble2 is not very clear inverted
   - Replace SDK Example Assets
     - Make Font bigger
       - Totally fine looking on simulator but not very clear on hardware

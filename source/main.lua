@@ -55,30 +55,16 @@ slice = gfx.nineSlice.new('images/shadowbox', 4, 4, 45, 45)
 
 listview = playdate.ui.gridview.new(0, 10)
 
+local listviewTimer = nil
+local listviewHeight = 36
+
 -- Menu structure
 levels = {}
 scores = {}
 currentLevel = ""
 
-local listviewTimer = nil
-local listviewHeight = 36
-
 local function animateListviewOpen()
         listviewTimer = playdate.timer.new(300, listviewHeight, 200, playdate.easingFunctions.outCubic)
-
-        listviewTimer.updateCallback = function(timer)
-                listviewHeight = timer.value
-        end
-
-        listviewTimer.timerEndedCallback = function(timer)
-                listviewHeight = timer.value
-                listviewTimer = nil
-        end
-end
-
-local function animateListviewClosed()
-
-        listviewTimer = playdate.timer.new(300, listviewHeight, 36, playdate.easingFunctions.outCubic)
 
         listviewTimer.updateCallback = function(timer)
                 listviewHeight = timer.value
@@ -126,32 +112,30 @@ function gridview:drawCell(section, row, column, selected, x, y, width, height)
     end
 end
 
+-- OVERRIDE
+-- Draws settings menu cells
 function listview:drawCell(section, row, column, selected, x, y, width, height)
     if selected then
-            gfx.setColor(gfx.kColorBlack)
-            gfx.fillRoundRect(x, y, width, 20, 4)
-            gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+        gfx.setColor(gfx.kColorBlack)
+        gfx.fillRoundRect(x, y, width, 20, 4)
     else
-            gfx.setImageDrawMode(gfx.kDrawModeCopy)
+        gfx.setImageDrawMode(gfx.kDrawModeCopy)
     end
     gfx.setFont(gridFont)
     gfx.drawTextInRect(constants.SETTINGS_MENU_OPTIONS[row], x, y+6, width, height+2, nil, "...", kTextAlignment.center)
     if playdate.buttonJustReleased(playdate.kButtonA) and selected then
-        -- Check to find the level that matches the selected cell and load it
+        -- Performs specific menu actions
         if row == 1 then
             -- View Tutorial
-            animateListviewClosed()
             view = 3
         elseif row == 2 then
             -- Delete Scores
             print("Delete Scores")
             playdate.datastore.delete()
             scores = {}
-            animateListviewClosed()
             view = 0
         elseif row == 3 then
             -- Go to Level Select
-            animateListviewClosed()
             view = 1
         else
         end
@@ -687,14 +671,17 @@ function playdate.update()
         buttonB:draw(270, 140)
         gfx.drawTextInRect("RETRY LEVEL ", 160, 165, 240, 160, nil, nil, kTextAlignment.center)
     elseif view == 3 then
+        -- Tutorial UI
         slice:drawInRect(40,40,320,160)
         gfx.drawTextInRect("USE THE CRANK TO AIM", 40, 75, 320, 160, nil, nil, kTextAlignment.center)
         gfx.drawTextInRect("USE D-PAD TO FIRE THE BOBBLE", 40, 100, 320, 160, nil, nil, kTextAlignment.center)
         gfx.drawTextInRect("PRESS A TO DISMISS", 40, 150, 320, 160, nil, nil, kTextAlignment.center)
         --playdate.ui.crankIndicator:update()
     elseif view == 4 then
+        -- Settings Menu UI
         gfx.setColor(gfx.kColorWhite)
         gfx.fillRect(220, 20, 160, 200)
+        gfx.drawTextInRect("SETTINGS", 20, 120, 220, 160, nil, nil, kTextAlignment.center)
         listview:drawInRect(220, 20, 160, listviewHeight)
     end
 end
@@ -730,7 +717,7 @@ local menuItem, error = menu:addMenuItem("Level Select", function()
     end
 end)
 
--- Delete level scores
+-- Opens the settings menu
 local menuItem, error = menu:addMenuItem("Settings", function()
     view = 4
     animateListviewOpen()

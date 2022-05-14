@@ -9,7 +9,7 @@ Not much, to be honest.
 - Level Select has a couple of test levels to choose from.
 - You play the game by aiming an arm to shoot and destroy all bobbles. Aiming is done with the crank on the console.
 - Completing the level gives you a score based on the number of shots fired. The lowest score is saved and displayed in level select.
-- Options to restart the level, go back to level select and go to settings (Settings is just starting to be worked on, not functional) are found when pressing the "Menu" button on the device or simulator.
+- Options to restart the level, go back to level select and go to settings are found when pressing the "Menu" button on the device or simulator.
 - You can delete your scores and view the tutorial again from the settings menu option
 
 New levels should definitely be made, but manually setting up the file is cumbersome. Building a level editor is a stretch goal.
@@ -45,16 +45,18 @@ Level Complete Screenshot
 
 Setttings Screenshot
 
-![5/14/2022 Level Complete Screenshot](resource/screenshots/playdate-20220514-103618.png)
+<!--![5/14/2022 Level Complete Screenshot](resource/screenshots/playdate-20220514-103618.png)-->
+![5/14/2022 Level Complete Screenshot](resource/screenshots/playdate-20220514-123010.png)
 
 *(see TODO for note about SDK Assets)*
 
 ### Compile
 - Set up PlayDate SDK - https://play.date/dev/
-- From the root directory of the repo
+- From the root directory of the repo, run the build script
 ```
-pdc -v source build/playdatebobble.pdx
+./build.sh
 ```
+- This build script creates the pdx file in the build directory and will also create a zip file for [sideloading through the PlayDate account page](https://play.date/account/sideload/)
 - Drag pdx file into the simulator to start playing or to sideload to physical device
 
 Fun fact: Running the pdx file in the simulator from a network share does NOT work. The errors don't make sense.

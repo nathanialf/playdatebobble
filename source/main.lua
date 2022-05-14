@@ -39,6 +39,7 @@ local lastTime = playdate.getCurrentTimeMilliseconds()
 -- 1 = In Level
 -- 2 = Level Complete
 -- 3 = Tutorial
+-- 4 = Settings
 local view = 3
 
 -- Menu stuff
@@ -115,6 +116,7 @@ function playdate.AButtonUp()
         view = 0
     end
 end
+
 function playdate.BButtonUp()
     if view == 2 then
         updateHighScore(currentLevel, shotsFired)
@@ -203,39 +205,80 @@ end
 
 -- function to load levels. Hardcoded for first draft
 function loadLevel(levelFileName)
+    local lineNum = 1
     local file = playdate.file.open(levelFileName, playdate.file.kFileRead)
     repeat
         local l = file:readline()
         if l then
-            --splits string into an array
-            --Line structure in level file should be
-            --Input types:
-            --B = Bobble
-            --B <Bobble Type (1-3)> <X Coordinate> <Y Coordinate>
-            --N = Neighbor
-            --N <Bobble a> <Bobble b>
-            ----Note: You will need to have an entry for N <a> <b> and N <b> <a>
+            -- Splits string into an array
+            -- Line structure in level file should be
+            -- Input types:
+            -- B = Bobble
+            -- B <Bobble Type (1-3)> <X Coordinate> <Y Coordinate>
+            -- N = Neighbor
+            -- N <Bobble a> <Bobble b>
+            ---- Note: You will need to have an entry for N <a> <b> and N <b> <a>
+            -- Level will load what it can and spit errors out for incorrect lines
             local result = {};
             for match in (l.." "):gmatch("(.-)".." ") do
                 table.insert(result, match);
             end
             -- creates stationary bobble from the data in the line
             if result[1] == "B" then
-                table.insert(
-                    bobbles, 
-                    Bobble:createStationary(
-                        tonumber(result[2]), 
-                        tonumber(result[3]), 
-                        tonumber(result[4])
+                if tonumber(result[2]) == nil or
+                    tonumber(result[3]) == nil or
+                    tonumber(result[4]) == nil then
+                    print("ERROR")
+                    print("Cannot read bobble on line " .. lineNum)
+                    print("Line is incorrectly formatted")
+                    print("Expected input:")
+                    print("B <Bobble Type (1-3)> <X Coordinate> <Y Coordinate>")
+                --elseif coordinates are outside of bounds
+                elseif tonumber(result[2]) < 1 or tonumber(result[2]) > 3 then
+                    print("ERROR")
+                    print("Invalid Bobble type (" .. tonumber(result[2]) .. ") on line " .. lineNum)
+                    print("Please set value to 1, 2, or 3")
+                else
+                    table.insert(
+                        bobbles, 
+                        Bobble:createStationary(
+                            tonumber(result[2]), 
+                            tonumber(result[3]), 
+                            tonumber(result[4])
+                        )
                     )
-                )
+                end
             elseif result[1] == "N" then
-                table.insert(
-                    bobbles[tonumber(result[2])].neighbors, 
-                    bobbles[tonumber(result[3])]
-                )
+                if tonumber(result[2]) == nil or
+                    tonumber(result[3]) == nil then
+                    print("ERROR")
+                    print("Cannot read neighbor definition on line " .. lineNum)
+                    print("Line is incorrectly formatted")
+                    print("Expected input:")
+                    print("N <Bobble a> <Bobble b>")
+                elseif bobbles[tonumber(result[2])] == nil then
+                    print("ERROR")
+                    print("Bobble A (" .. tonumber(result[2]) .. ") Does not exist earlier in the file than line " .. lineNum)
+                    print("Please ensure all bobbles are earlier in the file than the neighbors")
+                elseif bobbles[tonumber(result[3])] == nil then
+                    print("ERROR")
+                    print("Bobble B (" .. tonumber(result[3]) .. ") Does not exist earlier in the file than line " .. lineNum)
+                    print("Please ensure all bobbles are earlier in the file than the neighbors")
+                else
+                    table.insert(
+                        bobbles[tonumber(result[2])].neighbors, 
+                        bobbles[tonumber(result[3])]
+                    )
+                end
+            elseif string.sub(result[1], 1, 1) == "#" then
+                -- Commented Line
+                -- continue
+            else
+                print("ERROR")
+                print("Invalid line on line " .. lineNum)
             end
         end
+        lineNum += 1
     until l == nil
 
     file:close()
@@ -534,10 +577,10 @@ function playdate.update()
         gfx.drawTextInRect("RETRY LEVEL ", 160, 165, 240, 160, nil, nil, kTextAlignment.center)
     elseif view == 3 then
         slice:drawInRect(40,40,320,160)
-        gfx.drawTextInRect("USE D-PAD TO FIRE THE BOBBLE", 40, 75, 320, 160, nil, nil, kTextAlignment.center)
-        gfx.drawTextInRect("USE THE CRANK TO AIM", 40, 100, 320, 160, nil, nil, kTextAlignment.center)
+        gfx.drawTextInRect("USE THE CRANK TO AIM", 40, 75, 320, 160, nil, nil, kTextAlignment.center)
+        gfx.drawTextInRect("USE D-PAD TO FIRE THE BOBBLE", 40, 100, 320, 160, nil, nil, kTextAlignment.center)
         gfx.drawTextInRect("PRESS A TO DISMISS", 40, 150, 320, 160, nil, nil, kTextAlignment.center)
-        playdate.ui.crankIndicator:update()
+        --playdate.ui.crankIndicator:update()
     end
 end
 
@@ -573,7 +616,9 @@ local menuItem, error = menu:addMenuItem("Level Select", function()
 end)
 
 -- Delete level scores
-local menuItem, error = menu:addMenuItem("Delete Scores", function()
+local menuItem, error = menu:addMenuItem("Settings", function()
+    view = 4
+    -- Old code for delete save information. Saving for future use
     if view == 0 then
         print("Delete Scores")
         playdate.datastore.delete()

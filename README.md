@@ -5,10 +5,11 @@ I got the [Playdate](https://play.date) Console in my hands and thought it would
 ### Game Contents
 Not much, to be honest.
 
-- It boots into the Level Select and has a couple of test levels to choose from.
+- It boots into the tutorial to give the controls to use. Dismiss into Level Select
+- Level Select has a couple of test levels to choose from.
 - You play the game by aiming an arm to shoot and destroy all bobbles. Aiming is done with the crank on the console.
 - Completing the level gives you a score based on the number of shots fired. The lowest score is saved and displayed in level select.
-- Options to restart the level, go back to level select and delete save game data are found when pressing the "Menu" button on the device or simulator.
+- Options to restart the level, go back to level select and go to settings (Settings is just startign to be worked on, not functional) are found when pressing the "Menu" button on the device or simulator.
 
 New levels should definitely be made, but manually setting up the file is cumbersome. Building a level editor is a stretch goal.
 
@@ -20,7 +21,8 @@ Continued additions and goals are listed further down.
 
 Tutorial Screenshot
 
-![5/12/2022 Tutorial Screenshot](resource/screenshots/playdate-20220512-152435.png)
+<!--![5/12/2022 Tutorial Screenshot](resource/screenshots/playdate-20220512-152435.png)-->
+![5/14/2022 Tutorial Screenshot](resource/screenshots/playdate-20220514-011726.png)
 
 In-Game Screenshot
 <!--![4/27/2022 Screenshot](resource/screenshots/playdate-20220427-233610.png)-->
@@ -55,6 +57,19 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
 ### TODO
 - Code Quality
   - Add safegaurds for malformed level files
+    - Add Out of Bounds error to loadLevel()
+      - Store values as constants in constants.lua
+    - Add Out of Bounds entry in malformed.lvl
+    - Add error output for reading menu.lvl
+- Settings View
+  - Can go to from menu item but nothing is defined for this view so you will be soft-locked from doing anything
+  - Settings Options
+    - View Tutorial Again
+    - Delete Scores
+    - Maybe do the invert colors things
+      - Would require saving settings to a datastore
+    - Use listview (see gridview example again)
+    - Add screenshot
 - Art
   - Sprite Updates
     - Barrier sprites update but its pretty boring still
@@ -83,11 +98,15 @@ Extra stuff that would be nice to do but not currently in the scope of the proje
 - Have grouped up bobbles and their "children" drop off the screen
   - Have a boolean on bobble if its collided with a sticky wall turn true
   - Add support for said boolean in the level files to set initial sticky bobbles
+  - Check for malformed setup of boolean in loadLevel()
   - Search each bobble to see if there are any sets of bobbles disconnected from the wall
 - Add extra barriers in level files
+  - Check for malformed setup of barriers in loadLevel()
 - Build a level editor
     - PC based, not playdate based
     - Building by hand is far too time consuming when adding all neighbor pairs
+- Add Level Unlock and display requirements for locked levels
+  - Check for malformed level unlocke requirement entries in menu.lvl 
 - Display current score and level on the menu image
   - https://sdk.play.date/1.10.0/Inside%20Playdate.html#f-setMenuImage
 - Add pop-ups when you try to use menu items outside of their intended view

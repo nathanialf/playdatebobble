@@ -1,0 +1,26 @@
+# #################################
+# BOBBLES
+# #################################
+# Fine Bobble
+B 3 28 120
+# Invalid Bobble Format
+B 1
+# Invalid Bobble Type
+B 4 28 88
+# Invalid Bobble Type
+B 0 28 88
+# Invalid Bobble using letters
+B F U C
+# Invalid Bobble Out of Bounds
+# TODO
+# #################################
+# NEIGHBORS
+# #################################
+# Invalid Neighbor Format
+N 1
+# Invalid Neighbor a
+N 4 1
+# Invalid Neighbor B
+N 1 4
+# Invalid Line
+X abcde

@@ -10,3 +10,5 @@ constants.DEBUG = false
 constants.ARROW_UP_LIMIT = 80
 -- angle of the lower limit for the arrow to rotate to
 constants.ARROW_DOWN_LIMIT = 280
+
+-- Add boundary limits for loadLevel() here

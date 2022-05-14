@@ -55,7 +55,7 @@ Setttings Screenshot
 - Set up PlayDate SDK - https://play.date/dev/
 - From the root directory of the repo, run the build script
 ```
-./build.sh
+./build.sh [-b </path/to/build/dir>] [-f <playdatefile.pdx>]
 ```
 - This build script creates the pdx file in the build directory and will also create a zip file for [sideloading through the PlayDate account page](https://play.date/account/sideload/)
 - Drag pdx file into the simulator to start playing or to sideload to physical device
@@ -63,8 +63,6 @@ Setttings Screenshot
 Fun fact: Running the pdx file in the simulator from a network share does NOT work. The errors don't make sense.
 
 ### TODO
-- Build
-  - Change build script to take flags for build directory and pdx file name
 - Art
   - Sprite Updates
     - Barrier sprites update but its pretty boring still

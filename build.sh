@@ -2,6 +2,24 @@
 BUILD_DIRECTORY="build"
 PDC_OUTPUT_FILE="playdatebobble.pdx"
 
+usage () { echo "Usage: ./build.sh [-b </path/to/build/dir>] [-f <playdatefile.pdx>]"; exit 1; }
+
+while getopts "b:f:" opt; do
+    case ${opt} in
+        b )
+            # Sets BUILD_DIRECTORY to the value following -b
+            BUILD_DIRECTORY=$OPTARG
+            ;;
+        f )
+            # Sets PDC_OUTPUT_FILE to the value following -f
+            PDC_OUTPUT_FILE=$OPTARG
+            ;;
+        \? )
+            usage
+            ;;
+    esac
+done
+
 # Creates build directory if it doesn't exist
 if [ ! -d $BUILD_DIRECTORY ]
 then

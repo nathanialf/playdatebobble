@@ -131,25 +131,24 @@ function listview:drawCell(section, row, column, selected, x, y, width, height)
     gfx.drawTextInRect(constants.SETTINGS_MENU_OPTIONS[row], x, y+6, width, height+2, nil, "...", kTextAlignment.center)
     if playdate.buttonJustReleased(playdate.kButtonA) and selected then
         -- Performs specific menu actions
-        if row == 1 then
+        if constants.SETTINGS_MENU_OPTIONS[row] == "VIEW TUTORIAL" then
             -- View Tutorial
             view = 3
-        elseif row == 2 then
+        elseif constants.SETTINGS_MENU_OPTIONS[row] == "DELETE SCORES" then
             -- Delete Scores
             print("Delete Scores")
             playdate.datastore.delete()
             scores = {}
             view = 0
-        elseif row == 3 then
+        elseif constants.SETTINGS_MENU_OPTIONS[row] == "INVERT COLORS" then
             -- toggles the boolean and sets the function
             settings.inverted = not settings.inverted
             playdate.display.setInverted(settings.inverted)
             -- Saves to datastore
             playdate.datastore.write(settings, "settings")
-        elseif row == 4 then
+        elseif constants.SETTINGS_MENU_OPTIONS[row] == "EXIT" then
             -- Go to Level Select
             view = 0
-        else
         end
     end
 end

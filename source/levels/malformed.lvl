@@ -12,7 +12,8 @@ B 0 28 88
 # Invalid Bobble using letters
 B F U C
 # Invalid Bobble Out of Bounds
-# TODO
+B 1 0 100
+B 2 100 1000
 # #################################
 # NEIGHBORS
 # #################################

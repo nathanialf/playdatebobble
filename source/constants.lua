@@ -12,3 +12,10 @@ constants.ARROW_UP_LIMIT = 80
 constants.ARROW_DOWN_LIMIT = 280
 
 -- Add boundary limits for loadLevel() here
+constants.X_LOWER_BOUND = 28 -- 20 for the barrier and 8 is halfway through the bobble
+constants.X_UPPER_BOUND = 392 -- 400 Screen width, 20 for the barrier and 8 is halfway through the bobble
+constants.Y_LOWER_BOUND = 28 -- 20 for the barrier and 8 is halfway through the bobble
+constants.Y_UPPER_BOUND = 212 -- 240 screen width, 20 for the barrier and 8 is halfway through the bobble
+
+constants.SETTINGS_MENU_OPTIONS = {"VIEW TUTORIAL", "DELETE SCORES", "EXIT"}
+constants.LEVEL_SECTION_NAMES = {"Test Levels", "Main Game"}

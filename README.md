@@ -9,7 +9,8 @@ Not much, to be honest.
 - Level Select has a couple of test levels to choose from.
 - You play the game by aiming an arm to shoot and destroy all bobbles. Aiming is done with the crank on the console.
 - Completing the level gives you a score based on the number of shots fired. The lowest score is saved and displayed in level select.
-- Options to restart the level, go back to level select and go to settings (Settings is just startign to be worked on, not functional) are found when pressing the "Menu" button on the device or simulator.
+- Options to restart the level, go back to level select and go to settings (Settings is just starting to be worked on, not functional) are found when pressing the "Menu" button on the device or simulator.
+- You can delete your scores and view the tutorial again from the settings menu option
 
 New levels should definitely be made, but manually setting up the file is cumbersome. Building a level editor is a stretch goal.
 
@@ -24,23 +25,27 @@ Tutorial Screenshot
 <!--![5/12/2022 Tutorial Screenshot](resource/screenshots/playdate-20220512-152435.png)-->
 ![5/14/2022 Tutorial Screenshot](resource/screenshots/playdate-20220514-011726.png)
 
-In-Game Screenshot
-<!--![4/27/2022 Screenshot](resource/screenshots/playdate-20220427-233610.png)-->
-<!--![4/28/2022 Screenshot](resource/screenshots/playdate-20220428-175705.png)-->
-<!--![5/1/2022 In-Game Screenshot](resource/screenshots/playdate-20220501-222305.png)-->
-![5/4/2022 In-Game Screenshot](resource/screenshots/playdate-20220504-012106.png)
-
 Level Select Screenshot 
 
 <!--![5/3/2022 Menu Screenshot](resource/screenshots/playdate-20220503-015607.png)-->
 <!--![5/4/2022 Menu Screenshot](resource/screenshots/playdate-20220504-014448.png)-->
 ![5/4/2022 Menu Screenshot](resource/screenshots/playdate-20220504-232925.png)
 
+In-Game Screenshot
+<!--![4/27/2022 Screenshot](resource/screenshots/playdate-20220427-233610.png)-->
+<!--![4/28/2022 Screenshot](resource/screenshots/playdate-20220428-175705.png)-->
+<!--![5/1/2022 In-Game Screenshot](resource/screenshots/playdate-20220501-222305.png)-->
+![5/4/2022 In-Game Screenshot](resource/screenshots/playdate-20220504-012106.png)
+
 Level Complete Screenshot
 
 <!--![5/5/2022 Level Complete Screenshot](resource/screenshots/playdate-20220505-235113.png)-->
 <!--![5/6/2022 Level Complete Screenshot](resource/screenshots/playdate-20220506-013302.png)-->
 ![5/6/2022 Level Complete Screenshot](resource/screenshots/playdate-20220506-145714.png)
+
+Setttings Screenshot
+
+![5/14/2022 Level Complete Screenshot](resource/screenshots/playdate-20220514-103618.png)
 
 *(see TODO for note about SDK Assets)*
 
@@ -55,21 +60,11 @@ pdc -v source build/playdatebobble.pdx
 Fun fact: Running the pdx file in the simulator from a network share does NOT work. The errors don't make sense.
 
 ### TODO
-- Code Quality
-  - Add safegaurds for malformed level files
-    - Add Out of Bounds error to loadLevel()
-      - Store values as constants in constants.lua
-    - Add Out of Bounds entry in malformed.lvl
-    - Add error output for reading menu.lvl
 - Settings View
-  - Can go to from menu item but nothing is defined for this view so you will be soft-locked from doing anything
   - Settings Options
-    - View Tutorial Again
-    - Delete Scores
     - Maybe do the invert colors things
       - Would require saving settings to a datastore
-    - Use listview (see gridview example again)
-    - Add screenshot
+    - Probably should add a confirmation on the delete scores option to prevent accidental presses
 - Art
   - Sprite Updates
     - Barrier sprites update but its pretty boring still

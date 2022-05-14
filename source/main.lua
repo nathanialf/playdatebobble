@@ -53,10 +53,42 @@ gridview = playdate.ui.gridview.new(44, 44)
 
 slice = gfx.nineSlice.new('images/shadowbox', 4, 4, 45, 45)
 
+listview = playdate.ui.gridview.new(0, 10)
+
 -- Menu structure
 levels = {}
 scores = {}
 currentLevel = ""
+
+local listviewTimer = nil
+local listviewHeight = 36
+
+local function animateListviewOpen()
+        listviewTimer = playdate.timer.new(300, listviewHeight, 200, playdate.easingFunctions.outCubic)
+
+        listviewTimer.updateCallback = function(timer)
+                listviewHeight = timer.value
+        end
+
+        listviewTimer.timerEndedCallback = function(timer)
+                listviewHeight = timer.value
+                listviewTimer = nil
+        end
+end
+
+local function animateListviewClosed()
+
+        listviewTimer = playdate.timer.new(300, listviewHeight, 36, playdate.easingFunctions.outCubic)
+
+        listviewTimer.updateCallback = function(timer)
+                listviewHeight = timer.value
+        end
+
+        listviewTimer.timerEndedCallback = function(timer)
+                listviewHeight = timer.value
+                listviewTimer = nil
+        end
+end
 
 -- OVERRIDE
 -- Draws level select cells
@@ -91,16 +123,45 @@ function gridview:drawCell(section, row, column, selected, x, y, width, height)
                 break
             end
         end
-        
     end
 end
 
--- May read from a file but probably unnecessary for this
-sectionNames = {"Test Levels", "Main Game"}
+function listview:drawCell(section, row, column, selected, x, y, width, height)
+    if selected then
+            gfx.setColor(gfx.kColorBlack)
+            gfx.fillRoundRect(x, y, width, 20, 4)
+            gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+    else
+            gfx.setImageDrawMode(gfx.kDrawModeCopy)
+    end
+    gfx.setFont(gridFont)
+    gfx.drawTextInRect(constants.SETTINGS_MENU_OPTIONS[row], x, y+6, width, height+2, nil, "...", kTextAlignment.center)
+    if playdate.buttonJustReleased(playdate.kButtonA) and selected then
+        -- Check to find the level that matches the selected cell and load it
+        if row == 1 then
+            -- View Tutorial
+            animateListviewClosed()
+            view = 3
+        elseif row == 2 then
+            -- Delete Scores
+            print("Delete Scores")
+            playdate.datastore.delete()
+            scores = {}
+            animateListviewClosed()
+            view = 0
+        elseif row == 3 then
+            -- Go to Level Select
+            animateListviewClosed()
+            view = 1
+        else
+        end
+    end
+end
+
 -- OVERRIDE
 -- Draws level select section headers from table above
 function gridview:drawSectionHeader(section, x, y, width, height)
-    gfx.drawText("*"..sectionNames[section].."*", x + 10, y + 8)
+    gfx.drawText("*"..constants.LEVEL_SECTION_NAMES[section].."*", x + 10, y + 8)
 end
 
 -- buttons --
@@ -135,6 +196,8 @@ function playdate.upButtonUp()
     elseif view == 1 and #bobbles ~= 0 then
         -- Fires Bobbles
         fireBobble()
+    elseif view == 4 then
+        listview:selectPreviousRow(false)
     end
 end
 
@@ -145,6 +208,8 @@ function playdate.downButtonUp()
     elseif view == 1 and #bobbles ~= 0 then
         -- Fires Bobbles
         fireBobble()
+    elseif view == 4 then
+        listview:selectNextRow(false)
     end
 end
 
@@ -228,16 +293,29 @@ function loadLevel(levelFileName)
                 if tonumber(result[2]) == nil or
                     tonumber(result[3]) == nil or
                     tonumber(result[4]) == nil then
-                    print("ERROR")
+                    print("BOBBLE ERROR")
                     print("Cannot read bobble on line " .. lineNum)
                     print("Line is incorrectly formatted")
                     print("Expected input:")
                     print("B <Bobble Type (1-3)> <X Coordinate> <Y Coordinate>")
-                --elseif coordinates are outside of bounds
+                    print("Skipping ...")
+                    print()
+                elseif tonumber(result[3]) < constants.X_LOWER_BOUND or
+                    tonumber(result[3]) > constants.X_UPPER_BOUND or
+                    tonumber(result[4]) < constants.Y_LOWER_BOUND or
+                    tonumber(result[4]) > constants.Y_UPPER_BOUND then
+                    print("BOBBLE ERROR")
+                    print("Invalid Bobble location on line " .. lineNum)
+                    print("Please set the X value to be within " .. constants.X_LOWER_BOUND .. " and " .. constants.X_UPPER_BOUND)
+                    print("Please set the Y value to be within " .. constants.Y_LOWER_BOUND .. " and " .. constants.Y_UPPER_BOUND)
+                    print("Skipping ...")
+                    print()
                 elseif tonumber(result[2]) < 1 or tonumber(result[2]) > 3 then
-                    print("ERROR")
+                    print("BOBBLE ERROR")
                     print("Invalid Bobble type (" .. tonumber(result[2]) .. ") on line " .. lineNum)
                     print("Please set value to 1, 2, or 3")
+                    print("Skipping ...")
+                    print()
                 else
                     table.insert(
                         bobbles, 
@@ -251,19 +329,25 @@ function loadLevel(levelFileName)
             elseif result[1] == "N" then
                 if tonumber(result[2]) == nil or
                     tonumber(result[3]) == nil then
-                    print("ERROR")
+                    print("NEIGHBOR ERROR")
                     print("Cannot read neighbor definition on line " .. lineNum)
                     print("Line is incorrectly formatted")
                     print("Expected input:")
                     print("N <Bobble a> <Bobble b>")
+                    print("Skipping ...")
+                    print()
                 elseif bobbles[tonumber(result[2])] == nil then
-                    print("ERROR")
+                    print("NEIGHBOR ERROR")
                     print("Bobble A (" .. tonumber(result[2]) .. ") Does not exist earlier in the file than line " .. lineNum)
                     print("Please ensure all bobbles are earlier in the file than the neighbors")
+                    print("Skipping ...")
+                    print()
                 elseif bobbles[tonumber(result[3])] == nil then
-                    print("ERROR")
+                    print("NEIGHBOR ERROR")
                     print("Bobble B (" .. tonumber(result[3]) .. ") Does not exist earlier in the file than line " .. lineNum)
                     print("Please ensure all bobbles are earlier in the file than the neighbors")
+                    print("Skipping ...")
+                    print()
                 else
                     table.insert(
                         bobbles[tonumber(result[2])].neighbors, 
@@ -276,6 +360,8 @@ function loadLevel(levelFileName)
             else
                 print("ERROR")
                 print("Invalid line on line " .. lineNum)
+                print("Skipping ...")
+                print()
             end
         end
         lineNum += 1
@@ -370,6 +456,7 @@ function myGameSetUp()
     local biggestCol = 0
     local rowCount = {}
 
+    local lineNum = 1
     -- Reads from levels/menu.lvl which level to load based on the selected cell
     local file = playdate.file.open("levels/menu.lvl", playdate.file.kFileRead)
     repeat
@@ -381,24 +468,43 @@ function myGameSetUp()
                 table.insert(result, match);
             end
 
-            table.insert(
-                levels, 
-                {
-                    tonumber(result[1]),
-                    tonumber(result[2]),
-                    tonumber(result[3]),
-                    result[4],
-                }
-            )
-            -- Finds the largest column number because we can only set it for across the whole gridview for some reason
-            if tonumber(result[3]) > biggestCol then
-                biggestCol = tonumber(result[3])
-            end
-            -- Grabs the largest row number for each section
-            if rowCount[tonumber(result[1])] == nil or tonumber(result[2]) > rowCount[tonumber(result[1])] then
-                rowCount[tonumber(result[1])] = tonumber(result[2])
+            if string.sub(result[1], 1, 1) == "#" then
+                -- Commented Line
+                -- continue
+            else
+                if tonumber(result[1]) == nil or
+                    tonumber(result[2]) == nil or 
+                    tonumber(result[3]) == nil or
+                    result[4] == nil then
+                    print("MENU ERROR")
+                    print("Invalid menu level format on line " .. lineNum)
+                    print("Expected input:")
+                    print("<section> <row> <column> <filename>")
+                    print("Skipping ...")
+                    print()
+                else
+                    table.insert(
+                        levels, 
+                        {
+                            tonumber(result[1]),
+                            tonumber(result[2]),
+                            tonumber(result[3]),
+                            result[4],
+                        }
+                    )
+    
+                    -- Finds the largest column number because we can only set it for across the whole gridview for some reason
+                    if tonumber(result[3]) > biggestCol then
+                        biggestCol = tonumber(result[3])
+                    end
+                    -- Grabs the largest row number for each section
+                    if rowCount[tonumber(result[1])] == nil or tonumber(result[2]) > rowCount[tonumber(result[1])] then
+                        rowCount[tonumber(result[1])] = tonumber(result[2])
+                    end
+                end
             end
         end
+        lineNum += 1
     until l == nil
     file:close()
 
@@ -417,6 +523,11 @@ function myGameSetUp()
     gridview:setContentInset(1, 4, 1, 4)
     gridview:setCellPadding(4, 4, 4, 4)
     gridview.changeRowOnColumnWrap = true
+
+    listview.backgroundImage = slice
+    listview:setNumberOfRows(#constants.SETTINGS_MENU_OPTIONS)
+    listview:setCellPadding(0, 0, 13, 5)
+    listview:setContentInset(24, 24, 13, 11)
 end
 
 myGameSetUp()
@@ -581,6 +692,10 @@ function playdate.update()
         gfx.drawTextInRect("USE D-PAD TO FIRE THE BOBBLE", 40, 100, 320, 160, nil, nil, kTextAlignment.center)
         gfx.drawTextInRect("PRESS A TO DISMISS", 40, 150, 320, 160, nil, nil, kTextAlignment.center)
         --playdate.ui.crankIndicator:update()
+    elseif view == 4 then
+        gfx.setColor(gfx.kColorWhite)
+        gfx.fillRect(220, 20, 160, 200)
+        listview:drawInRect(220, 20, 160, listviewHeight)
     end
 end
 
@@ -618,10 +733,5 @@ end)
 -- Delete level scores
 local menuItem, error = menu:addMenuItem("Settings", function()
     view = 4
-    -- Old code for delete save information. Saving for future use
-    if view == 0 then
-        print("Delete Scores")
-        playdate.datastore.delete()
-        scores = {}
-    end
+    animateListviewOpen()
 end)

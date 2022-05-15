@@ -20,3 +20,6 @@ constants.Y_UPPER_BOUND = 212 -- 240 screen width, 20 for the barrier and 8 is h
 -- Menu Strings
 constants.SETTINGS_MENU_OPTIONS = {"VIEW TUTORIAL", "DELETE SCORES", "INVERT COLORS", "EXIT"}
 constants.LEVEL_SECTION_NAMES = {"Test Levels", "Main Game"}
+
+-- Table to return a boolean for a string of the value desired
+constants.STRING_TO_BOOLEAN={ ["true"]=true, ["false"]=false }

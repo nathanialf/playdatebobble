@@ -2,18 +2,20 @@
 # BOBBLES
 # #################################
 # Fine Bobble
-B 3 28 120
+B 3 28 120 true
 # Invalid Bobble Format
 B 1
 # Invalid Bobble Type
-B 4 28 88
+B 4 28 88 false
 # Invalid Bobble Type
-B 0 28 88
+B 0 28 88 false
 # Invalid Bobble using letters
-B F U C
+B F U C true
 # Invalid Bobble Out of Bounds
-B 1 0 100
-B 2 100 1000
+B 1 0 100 true
+B 2 100 1000 false
+# Invalid Bobble not using boolean
+B 2 100 100
 # #################################
 # NEIGHBORS
 # #################################

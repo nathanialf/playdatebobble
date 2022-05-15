@@ -286,12 +286,13 @@ function loadLevel(levelFileName)
             if result[1] == "B" then
                 if tonumber(result[2]) == nil or
                     tonumber(result[3]) == nil or
-                    tonumber(result[4]) == nil then
+                    tonumber(result[4]) == nil or 
+                    constants.STRING_TO_BOOLEAN[result[5]] == nil then
                     print("BOBBLE ERROR")
                     print("Cannot read bobble on line " .. lineNum)
                     print("Line is incorrectly formatted")
                     print("Expected input:")
-                    print("B <Bobble Type (1-3)> <X Coordinate> <Y Coordinate>")
+                    print("B <Bobble Type (1-3)> <X Coordinate> <Y Coordinate> <attachedToWall true|false>")
                     print("Skipping ...")
                     print()
                 elseif tonumber(result[3]) < constants.X_LOWER_BOUND or
@@ -316,7 +317,8 @@ function loadLevel(levelFileName)
                         Bobble:createStationary(
                             tonumber(result[2]), 
                             tonumber(result[3]), 
-                            tonumber(result[4])
+                            tonumber(result[4]),
+                            constants.STRING_TO_BOOLEAN[result[5]]
                         )
                     )
                 end
@@ -610,15 +612,16 @@ function playdate.update()
                     table.remove(bobbles, i)
                 end
             end
+            -- Check bobbles and neighbors for floating here
             for i=1,#bobbles
             do
                 bobbles[i].poppable = false
                 for j=1,#bobbles[i].neighbors
                 do
                     bobbles[i].neighbors[j].poppable = false
+                    -- Set value for checking if floating to false here
                 end
             end
-            -- Check for free hanging bobbles (not attached to a sticky wall) and remove them
         else
             for i=1,#bobbles
             do
@@ -626,6 +629,7 @@ function playdate.update()
                 for j=1,#bobbles[i].neighbors
                 do
                     bobbles[i].neighbors[j].poppable = false
+                    -- Set value for checking if floating to false here
                 end
             end 
         end

@@ -67,11 +67,8 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
 
 #### [High Priority]
 - Have grouped up bobbles and their "children" drop off the screen
-  - Have a boolean on bobble if its collided with a sticky wall turn true
-  - Add support for said boolean in the level files to set initial sticky bobbles
-  - Check for malformed setup of boolean in loadLevel()
-  - Search each bobble to see if there are any sets of bobbles disconnected from the wall
-    - Might be able to search through the bobbles that had a neighbor removed to not search through every single bobble
+  - Add boolean for neighbors of poppable of a different type during setPoppableOnCollision()
+  - Set boolean to false when resetting poppables after removing in main.lua
 
 #### [Medium Priority]
 - Levels
@@ -84,7 +81,7 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
     - Tanya has some ideas for designs of levels. She will be credited if/when she designs them
   - Add Level Unlock and display requirements for locked levels
     - Check for malformed level unlocke requirement entries in menu.lvl     
-    
+
 #### [Low Priority]
 - Art
   - Sprite Updates

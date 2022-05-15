@@ -9,7 +9,7 @@ local gfx <const> = playdate.graphics
 class('Bobble').extends(playdate.graphics.sprite)
 
 -- constructor for level bobbles
-function Bobble:createStationary(type, x, y)
+function Bobble:createStationary(type, x, y, attachedToWall)
     local bble = Bobble()
 
     --ensures the bobbles wont move
@@ -18,6 +18,7 @@ function Bobble:createStationary(type, x, y)
     bble.speedX = 0
     bble.speedY = 0
     bble.type = type
+    bble.attachedToWall = attachedToWall
 
     bble:createSprite(type)
     
@@ -37,6 +38,7 @@ function Bobble:create(type, x, y, angle)
     bble.speedX = .4
     bble.speedY = .4
     bble.type = type
+    bble.attachedToWall = false
 
     bble.isMoving = true
 
@@ -85,6 +87,8 @@ function Bobble:setPoppableOnCollision()
         if self.neighbors[i] ~= nil then
             if (not self.neighbors[i].poppable) and (self.neighbors[i].type == self.type) then
                 self.neighbors[i]:setPoppableOnCollision()
+            elseif not self.neighbors[i].poppable and self.neighbors[i].type ~= self.type then
+                -- Set a variable here for checking for floating. Will be used
             end
         end
     end
@@ -109,6 +113,9 @@ function Bobble:move(deltaTime)
                 if collision.normal.y ~= 0 then -- hit something in the Y direction
                     self.speedY = -self.speedY
                 end
+            elseif collision.other.entity == constants.kBARRIER and collision.other.isSticky then
+                self.isMoving = false
+                self.attachedToWall = true
             else
                 self.isMoving = false
                 -- Check Collisions for popping bobbles

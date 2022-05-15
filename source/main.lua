@@ -163,7 +163,6 @@ end
 function playdate.AButtonUp()
     if view == 2 then
         updateHighScore(currentLevel, shotsFired)
-        removeAllBobbles()
         -- Changes back to the level select view
         currentLevel = ""
         shotsFired = 0
@@ -176,7 +175,6 @@ end
 function playdate.BButtonUp()
     if view == 2 then
         updateHighScore(currentLevel, shotsFired)
-        removeAllBobbles()
         -- Loads level again
         shotsFired = 0
         loadLevel(currentLevel)
@@ -265,6 +263,7 @@ end
 
 -- function to load levels. Hardcoded for first draft
 function loadLevel(levelFileName)
+    removeAllBobbles()
     local lineNum = 1
     local file = playdate.file.open(levelFileName, playdate.file.kFileRead)
     repeat
@@ -691,9 +690,10 @@ function playdate.update()
     elseif view == 3 then
         -- Tutorial UI
         slice:drawInRect(40,40,320,160)
+        gfx.setFont(gridFont)
         gfx.drawTextInRect("USE THE CRANK TO AIM", 40, 75, 320, 160, nil, nil, kTextAlignment.center)
         gfx.drawTextInRect("USE D-PAD TO FIRE THE BOBBLE", 40, 100, 320, 160, nil, nil, kTextAlignment.center)
-        gfx.drawTextInRect("PRESS A TO DISMISS", 40, 150, 320, 160, nil, nil, kTextAlignment.center)
+        gfx.drawTextInRect("PRESS A TO START", 40, 150, 320, 160, nil, nil, kTextAlignment.center)
         --playdate.ui.crankIndicator:update()
     elseif view == 4 then
         -- Settings Menu UI
@@ -712,7 +712,6 @@ local menu = playdate.getSystemMenu()
 local menuItem, error = menu:addMenuItem("Restart Level", function()
     if view == 1 then
         print("Restart Level")
-        removeAllBobbles()
         -- Loads level again
         shotsFired = 0
         loadLevel(currentLevel)
@@ -727,7 +726,6 @@ local menuItem, error = menu:addMenuItem("Level Select", function()
     end
     if view == 1 then
         print("Level Select")
-        removeAllBobbles()
         -- Changes back to the level select view
         currentLevel = ""
         shotsFired = 0

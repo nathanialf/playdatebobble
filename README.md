@@ -23,7 +23,8 @@ Continued additions and goals are listed further down.
 Tutorial Screenshot
 
 <!--![5/12/2022 Tutorial Screenshot](resource/screenshots/playdate-20220512-152435.png)-->
-![5/14/2022 Tutorial Screenshot](resource/screenshots/playdate-20220514-011726.png)
+<!--![5/14/2022 Tutorial Screenshot](resource/screenshots/playdate-20220514-011726.png)-->
+![5/14/2022 Tutorial Screenshot](resource/screenshots/playdate-20220514-232028.png)
 
 Level Select Screenshot 
 
@@ -45,9 +46,9 @@ Level Complete Screenshot
 
 Setttings Screenshot
 
-<!--![5/14/2022 Level Complete Screenshot](resource/screenshots/playdate-20220514-103618.png)-->
-<!--![5/14/2022 Level Complete Screenshot](resource/screenshots/playdate-20220514-123010.png)-->
-![5/14/2022 Level Complete Screenshot](resource/screenshots/playdate-20220514-133709.png)
+<!--![5/14/2022 Settings Screenshot](resource/screenshots/playdate-20220514-103618.png)-->
+<!--![5/14/2022 Settings Screenshot](resource/screenshots/playdate-20220514-123010.png)-->
+![5/14/2022 Settigns Screenshot](resource/screenshots/playdate-20220514-133709.png)
 
 *(see TODO for note about SDK Assets)*
 
@@ -63,6 +64,28 @@ Setttings Screenshot
 Fun fact: Running the pdx file in the simulator from a network share does NOT work. The errors don't make sense.
 
 ### TODO
+
+#### [High Priority]
+- Have grouped up bobbles and their "children" drop off the screen
+  - Have a boolean on bobble if its collided with a sticky wall turn true
+  - Add support for said boolean in the level files to set initial sticky bobbles
+  - Check for malformed setup of boolean in loadLevel()
+  - Search each bobble to see if there are any sets of bobbles disconnected from the wall
+    - Might be able to search through the bobbles that had a neighbor removed to not search through every single bobble
+
+#### [Medium Priority]
+- Levels
+  - Add extra barriers in level files
+    - Check for malformed setup of barriers in loadLevel()
+  - Build a level editor
+    - PC based, not playdate based
+    - Building by hand is far too time consuming when adding all neighbor pairs
+  - Add more levels
+    - Tanya has some ideas for designs of levels. She will be credited if/when she designs them
+  - Add Level Unlock and display requirements for locked levels
+    - Check for malformed level unlocke requirement entries in menu.lvl     
+    
+#### [Low Priority]
 - Art
   - Sprite Updates
     - Barrier sprites update but its pretty boring still
@@ -85,23 +108,13 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
     - Menuing sounds
       - Move cursor/change level
       - Selecting an option/level
-- Add more levels (Possibly through Level editor in Stretch Goals section)
-
-### Stretch Goals
-Extra stuff that would be nice to do but not currently in the scope of the project
-- Have grouped up bobbles and their "children" drop off the screen
-  - Have a boolean on bobble if its collided with a sticky wall turn true
-  - Add support for said boolean in the level files to set initial sticky bobbles
-  - Check for malformed setup of boolean in loadLevel()
-  - Search each bobble to see if there are any sets of bobbles disconnected from the wall
-- Add extra barriers in level files
-  - Check for malformed setup of barriers in loadLevel()
-- Build a level editor
-    - PC based, not playdate based
-    - Building by hand is far too time consuming when adding all neighbor pairs
-- Add Level Unlock and display requirements for locked levels
-  - Check for malformed level unlocke requirement entries in menu.lvl 
 - Display current score and level on the menu image
   - https://sdk.play.date/1.10.0/Inside%20Playdate.html#f-setMenuImage
 - Add pop-ups when you try to use menu items outside of their intended view
   - Example: "Unable to Delete Scores, please try again from Level Select" when in a level
+
+
+
+
+
+

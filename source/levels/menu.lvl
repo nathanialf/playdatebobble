@@ -1,7 +1,8 @@
 1 1 1 levels/test_easy.lvl
 1 1 2 levels/test.lvl
 1 1 3 levels/floating_test.lvl
-# For Malformed bobble and neighbor tests
+1 1 4 levels/test_barrier.lvl
+# For Malformed bobble, neighbor and barrier tests
 #1 1 3 levels/malformed.lvl
 # Malformed entries
 #B 3 4 test

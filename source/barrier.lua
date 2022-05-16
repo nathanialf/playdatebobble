@@ -33,10 +33,10 @@ function Barrier:create(x, y, isHorizontal, isSticky)
     barr:addSprite()
     
     -- used to tell what the object is during collisions
-    barr.entity = constants.kBARRIER
+    barr.entity = kBARRIER
 
     -- sets the collision group this object is in
-    barr:setGroups(constants.kBARRIER)
+    barr:setGroups(kBARRIER)
     if not isHorizontal then
         barr:setRotation(90)
     end
@@ -50,4 +50,6 @@ function Barrier:create(x, y, isHorizontal, isSticky)
     else
         barr.collisionResponse = gfx.sprite.kCollisionTypeBounce
     end
+
+    return barr
 end

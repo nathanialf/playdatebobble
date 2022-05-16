@@ -27,6 +27,7 @@ local integer nextBobble = 1
 -- Arrays (tables?) of bobbles and barriers
 local bobbles = {}
 local barriers = {}
+local levelBarriers = {}
 
 -- Shots fired for tracking score
 local shotsFired = 0
@@ -128,25 +129,25 @@ function listview:drawCell(section, row, column, selected, x, y, width, height)
         gfx.setImageDrawMode(gfx.kDrawModeCopy)
     end
     gfx.setFont(gridFont)
-    gfx.drawTextInRect(constants.SETTINGS_MENU_OPTIONS[row], x, y+6, width, height+2, nil, "...", kTextAlignment.center)
+    gfx.drawTextInRect(SETTINGS_MENU_OPTIONS[row], x, y+6, width, height+2, nil, "...", kTextAlignment.center)
     if playdate.buttonJustReleased(playdate.kButtonA) and selected then
         -- Performs specific menu actions
-        if constants.SETTINGS_MENU_OPTIONS[row] == "VIEW TUTORIAL" then
+        if SETTINGS_MENU_OPTIONS[row] == "VIEW TUTORIAL" then
             -- View Tutorial
             view = 3
-        elseif constants.SETTINGS_MENU_OPTIONS[row] == "DELETE SCORES" then
+        elseif SETTINGS_MENU_OPTIONS[row] == "DELETE SCORES" then
             -- Delete Scores
             print("Delete Scores")
             playdate.datastore.delete()
             scores = {}
             view = 0
-        elseif constants.SETTINGS_MENU_OPTIONS[row] == "INVERT COLORS" then
+        elseif SETTINGS_MENU_OPTIONS[row] == "INVERT COLORS" then
             -- toggles the boolean and sets the function
             settings.inverted = not settings.inverted
             playdate.display.setInverted(settings.inverted)
             -- Saves to datastore
             playdate.datastore.write(settings, "settings")
-        elseif constants.SETTINGS_MENU_OPTIONS[row] == "EXIT" then
+        elseif SETTINGS_MENU_OPTIONS[row] == "EXIT" then
             -- Go to Level Select
             view = 0
         end
@@ -156,7 +157,7 @@ end
 -- OVERRIDE
 -- Draws level select section headers from table above
 function gridview:drawSectionHeader(section, x, y, width, height)
-    gfx.drawText("*"..constants.LEVEL_SECTION_NAMES[section].."*", x + 10, y + 8)
+    gfx.drawText("*"..LEVEL_SECTION_NAMES[section].."*", x + 10, y + 8)
 end
 
 -- buttons --
@@ -251,7 +252,7 @@ end
 -- function to setup up the preview bobble (used multiple times)
 function setUpPreviewBobble()
     -- picks the type of bobble for the next shot
-    if constants.DEBUG then
+    if DEBUG then
         nextBobble = 3 -- DEBUG Easy to complete 1-1-1
     else
         nextBobble = math.random(1,3)
@@ -263,7 +264,15 @@ end
 
 -- function to load levels. Hardcoded for first draft
 function loadLevel(levelFileName)
+    -- Clears bobbles for new level ones
     removeAllBobbles()
+
+    -- Clears barriers for new level ones
+    for i=#levelBarriers,1,-1 do
+        levelBarriers[i]:remove()
+        table.remove(levelBarriers, i)
+    end
+
     local lineNum = 1
     local file = playdate.file.open(levelFileName, playdate.file.kFileRead)
     repeat
@@ -277,6 +286,8 @@ function loadLevel(levelFileName)
             -- N = Neighbor
             -- N <Bobble a> <Bobble b>
             ---- Note: You will need to have an entry for N <a> <b> and N <b> <a>
+            -- R = Barrier
+            -- R <X Coordinate> <Y Coordinate> <isHorizontal true|false> <isSticky true|false>
             -- Level will load what it can and spit errors out for incorrect lines
             local result = {};
             for match in (l.." "):gmatch("(.-)".." ") do
@@ -287,7 +298,7 @@ function loadLevel(levelFileName)
                 if tonumber(result[2]) == nil or
                     tonumber(result[3]) == nil or
                     tonumber(result[4]) == nil or 
-                    constants.STRING_TO_BOOLEAN[result[5]] == nil then
+                    STRING_TO_BOOLEAN[result[5]] == nil then
                     print("BOBBLE ERROR")
                     print("Cannot read bobble on line " .. lineNum)
                     print("Line is incorrectly formatted")
@@ -295,14 +306,14 @@ function loadLevel(levelFileName)
                     print("B <Bobble Type (1-3)> <X Coordinate> <Y Coordinate> <attachedToWall true|false>")
                     print("Skipping ...")
                     print()
-                elseif tonumber(result[3]) < constants.X_LOWER_BOUND or
-                    tonumber(result[3]) > constants.X_UPPER_BOUND or
-                    tonumber(result[4]) < constants.Y_LOWER_BOUND or
-                    tonumber(result[4]) > constants.Y_UPPER_BOUND then
+                elseif tonumber(result[3]) < X_LOWER_BOUND or
+                    tonumber(result[3]) > X_UPPER_BOUND or
+                    tonumber(result[4]) < Y_LOWER_BOUND or
+                    tonumber(result[4]) > Y_UPPER_BOUND then
                     print("BOBBLE ERROR")
                     print("Invalid Bobble location on line " .. lineNum)
-                    print("Please set the X value to be within " .. constants.X_LOWER_BOUND .. " and " .. constants.X_UPPER_BOUND)
-                    print("Please set the Y value to be within " .. constants.Y_LOWER_BOUND .. " and " .. constants.Y_UPPER_BOUND)
+                    print("Please set the X value to be within " .. X_LOWER_BOUND .. " and " .. X_UPPER_BOUND)
+                    print("Please set the Y value to be within " .. Y_LOWER_BOUND .. " and " .. Y_UPPER_BOUND)
                     print("Skipping ...")
                     print()
                 elseif tonumber(result[2]) < 1 or tonumber(result[2]) > 3 then
@@ -318,7 +329,7 @@ function loadLevel(levelFileName)
                             tonumber(result[2]), 
                             tonumber(result[3]), 
                             tonumber(result[4]),
-                            constants.STRING_TO_BOOLEAN[result[5]]
+                            STRING_TO_BOOLEAN[result[5]]
                         )
                     )
                 end
@@ -350,6 +361,17 @@ function loadLevel(levelFileName)
                         bobbles[tonumber(result[3])]
                     )
                 end
+            elseif result[1] == "R" then
+                -- TODO: Add barrier requirements with error output for malformed
+                table.insert(
+                    levelBarriers,
+                    Barrier:create(
+                        tonumber(result[2]),
+                        tonumber(result[3]),
+                        STRING_TO_BOOLEAN[result[4]],
+                        STRING_TO_BOOLEAN[result[5]]
+                    )
+                )
             elseif string.sub(result[1], 1, 1) == "#" then
                 -- Commented Line
                 -- continue
@@ -421,6 +443,7 @@ function myGameSetUp()
     barriers[1] = Barrier:create(10, 120, false, true)
     barriers[2] = Barrier:create(200, 230, true, false)
     barriers[3] = Barrier:create(200, 10, true, false)
+    barriers[4] = Barrier:create(420, 10, false, false)
 
     -- We want an environment displayed behind our sprite.
     -- There are generally two ways to do this:
@@ -528,7 +551,7 @@ function myGameSetUp()
     gridview.changeRowOnColumnWrap = true
 
     listview.backgroundImage = slice
-    listview:setNumberOfRows(#constants.SETTINGS_MENU_OPTIONS)
+    listview:setNumberOfRows(#SETTINGS_MENU_OPTIONS)
     listview:setCellPadding(0, 0, 13, 5)
     listview:setContentInset(24, 24, 13, 11)
 end
@@ -563,15 +586,15 @@ function playdate.update()
         -- Conditional will probably change to if in a game and beating the game will take you into a menu to remove interaction
         if #bobbles ~= 0 then            
             -- prevents the angle we want to shoot at from going above or below a certain threshold
-            if arrowRotation >= constants.ARROW_UP_LIMIT and arrowRotation < 180 then
+            if arrowRotation >= ARROW_UP_LIMIT and arrowRotation < 180 then
                 stopRotatingUp = true
-                arrowRotation = constants.ARROW_UP_LIMIT
+                arrowRotation = ARROW_UP_LIMIT
             else
                 stopRotatingUp = false
             end
-            if arrowRotation <= constants.ARROW_DOWN_LIMIT and arrowRotation >= 180 then
+            if arrowRotation <= ARROW_DOWN_LIMIT and arrowRotation >= 180 then
                 stopRotatingDown = true
-                arrowRotation = constants.ARROW_DOWN_LIMIT
+                arrowRotation = ARROW_DOWN_LIMIT
             else
                 stopRotatingDown = false
             end
@@ -748,7 +771,7 @@ end)
 
 -- Switches back to level select if in game
 local menuItem, error = menu:addMenuItem("Level Select", function()
-    if constants.DEBUG then
+    if DEBUG then
         view = 2 -- DEBUG easy access to level complete screen
                  -- Retry Level button will NOT work when accessing this way
     end

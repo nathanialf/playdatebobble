@@ -69,8 +69,9 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
 
 #### [Medium Priority]
 - Levels
-  - Add extra barriers in level files
+  - Add extra barriers in level files [ IN-PROGRESS ]
     - Check for malformed setup of barriers in loadLevel()
+    - Add length value to barrier object
   - Build a level editor
     - PC based, not playdate based
     - Building by hand is far too time consuming when adding all neighbor pairs
@@ -78,7 +79,6 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
     - Tanya has some ideas for designs of levels. She will be credited if/when she designs them
   - Add Level Unlock and display requirements for locked levels
     - Check for malformed level unlocke requirement entries in menu.lvl
-- Refactor to remove constants from a table. Doesn't seem necessary. Not sure about best practices here
 
 #### [Low Priority]
 - Art
@@ -107,6 +107,7 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
   - https://sdk.play.date/1.10.0/Inside%20Playdate.html#f-setMenuImage
 - Add pop-ups when you try to use menu items outside of their intended view
   - Example: "Unable to Delete Scores, please try again from Level Select" when in a level
+- Moveable level barriers?
 
 
 

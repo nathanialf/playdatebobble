@@ -60,7 +60,7 @@ function Bobble:createSprite(type)
     self.type = type
 
     -- used to tell what the object is during collisions
-    self.entity = constants.kBOBBLE
+    self.entity = kBOBBLE
 
     -- Sets opacity
     self:setOpaque(false)
@@ -68,9 +68,9 @@ function Bobble:createSprite(type)
     -- collision rect is set to the sprites location and dimensions
     self:setCollideRect(0, 0, self:getSize())
     -- sets the collision group this object is in
-    self:setGroups(constants.kBOBBLE)
+    self:setGroups(kBOBBLE)
     -- sets what collision groups this object can collide
-    self:setCollidesWithGroups({constants.kBOBBLE, constants.kBARRIER})
+    self:setCollidesWithGroups({kBOBBLE, kBARRIER})
     -- sets if we can should try to pop the bobble
     self.poppable = false
     
@@ -142,7 +142,7 @@ function Bobble:move(deltaTime)
         for i=1, collisionCount do
             local collision = collisions[i]
     
-            if collision.other.entity == constants.kBARRIER and not collision.other.isSticky then
+            if collision.other.entity == kBARRIER and not collision.other.isSticky then
                 -- when a player or monster collides with anything just bounce off of it
                 if collision.normal.x ~= 0 then -- hit something in the X direction
                     self.speedX = -self.speedX
@@ -150,13 +150,13 @@ function Bobble:move(deltaTime)
                 if collision.normal.y ~= 0 then -- hit something in the Y direction
                     self.speedY = -self.speedY
                 end
-            elseif collision.other.entity == constants.kBARRIER and collision.other.isSticky then
+            elseif collision.other.entity == kBARRIER and collision.other.isSticky then
                 self.isMoving = false
                 self.attachedToWall = true
             else
                 self.isMoving = false
                 -- Check Collisions for popping bobbles
-                if collision.other.entity == constants.kBOBBLE then
+                if collision.other.entity == kBOBBLE then
                     -- Add to neighborhood
                     self.neighbors[#self.neighbors + 1] = collision.other
                     collision.other.neighbors[#collision.other.neighbors + 1] = self

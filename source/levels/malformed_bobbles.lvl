@@ -16,14 +16,3 @@ B 1 0 100 true
 B 2 100 1000 false
 # Invalid Bobble not using boolean
 B 2 100 100
-# #################################
-# NEIGHBORS
-# #################################
-# Invalid Neighbor Format
-N 1
-# Invalid Neighbor a
-N 4 1
-# Invalid Neighbor B
-N 1 4
-# Invalid Line
-X abcde

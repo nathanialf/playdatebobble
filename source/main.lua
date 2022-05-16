@@ -157,7 +157,11 @@ end
 -- OVERRIDE
 -- Draws level select section headers from table above
 function gridview:drawSectionHeader(section, x, y, width, height)
-    gfx.drawText("*"..LEVEL_SECTION_NAMES[section].."*", x + 10, y + 8)
+    if DEBUG then
+        gfx.drawText("*"..DEBUG_LEVEL_SECTION_NAMES[section].."*", x + 10, y + 8)
+    else
+        gfx.drawText("*"..LEVEL_SECTION_NAMES[section].."*", x + 10, y + 8)
+    end
 end
 
 -- buttons --
@@ -287,7 +291,7 @@ function loadLevel(levelFileName)
             -- N <Bobble a> <Bobble b>
             ---- Note: You will need to have an entry for N <a> <b> and N <b> <a>
             -- R = Barrier
-            -- R <X Coordinate> <Y Coordinate> <isHorizontal true|false> <isSticky true|false>
+            -- R <X Coordinate> <Y Coordinate> <Width> <Height> <isHorizontal true|false> <isSticky true|false>
             -- Level will load what it can and spit errors out for incorrect lines
             local result = {};
             for match in (l.." "):gmatch("(.-)".." ") do
@@ -306,14 +310,14 @@ function loadLevel(levelFileName)
                     print("B <Bobble Type (1-3)> <X Coordinate> <Y Coordinate> <attachedToWall true|false>")
                     print("Skipping ...")
                     print()
-                elseif tonumber(result[3]) < X_LOWER_BOUND or
-                    tonumber(result[3]) > X_UPPER_BOUND or
-                    tonumber(result[4]) < Y_LOWER_BOUND or
-                    tonumber(result[4]) > Y_UPPER_BOUND then
+                elseif tonumber(result[3]) < X_BOBBLE_LOWER_BOUND or
+                    tonumber(result[3]) > X_BOBBLE_UPPER_BOUND or
+                    tonumber(result[4]) < Y_BOBBLE_LOWER_BOUND or
+                    tonumber(result[4]) > Y_BOBBLE_UPPER_BOUND then
                     print("BOBBLE ERROR")
                     print("Invalid Bobble location on line " .. lineNum)
-                    print("Please set the X value to be within " .. X_LOWER_BOUND .. " and " .. X_UPPER_BOUND)
-                    print("Please set the Y value to be within " .. Y_LOWER_BOUND .. " and " .. Y_UPPER_BOUND)
+                    print("Please set the X value to be within " .. X_BOBBLE_LOWER_BOUND .. " and " .. X_BOBBLE_UPPER_BOUND)
+                    print("Please set the Y value to be within " .. Y_BOBBLE_LOWER_BOUND .. " and " .. Y_BOBBLE_UPPER_BOUND)
                     print("Skipping ...")
                     print()
                 elseif tonumber(result[2]) < 1 or tonumber(result[2]) > 3 then
@@ -363,15 +367,43 @@ function loadLevel(levelFileName)
                 end
             elseif result[1] == "R" then
                 -- TODO: Add barrier requirements with error output for malformed
-                table.insert(
-                    levelBarriers,
-                    Barrier:create(
-                        tonumber(result[2]),
-                        tonumber(result[3]),
-                        STRING_TO_BOOLEAN[result[4]],
-                        STRING_TO_BOOLEAN[result[5]]
+                if tonumber(result[2]) == nil or
+                    tonumber(result[3]) == nil or
+                    tonumber(result[4]) == nil or 
+                    tonumber(result[5]) == nil or 
+                    STRING_TO_BOOLEAN[result[6]] == nil or
+                    STRING_TO_BOOLEAN[result[7]] == nil then
+                    print("BARRIER ERROR")
+                    print("Cannot read barrier on line " .. lineNum)
+                    print("Line is incorrectly formatted")
+                    print("Expected input:")
+                    print("R <X Coordinate> <Y Coordinate> <Width> <Height> <isHorizontal true|false> <isSticky true|false>")
+                    print("Skipping ...")
+                    print()
+                elseif tonumber(result[2]) < X_BARRIER_LOWER_BOUND or
+                    tonumber(result[2]) > X_BARRIER_UPPER_BOUND or
+                    tonumber(result[3]) < Y_BARRIER_LOWER_BOUND or
+                    tonumber(result[3]) > Y_BARRIER_UPPER_BOUND then
+                    print()
+                    print("BARRIER ERROR")
+                    print("Invalid Barrier location on line " .. lineNum)
+                    print("Please set the X value to be within " .. X_BARRIER_LOWER_BOUND .. " and " .. X_BARRIER_UPPER_BOUND)
+                    print("Please set the Y value to be within " .. Y_BARRIER_LOWER_BOUND .. " and " .. Y_BARRIER_UPPER_BOUND)
+                    print("Skipping ...")
+                    print()
+                else
+                    table.insert(
+                        levelBarriers,
+                        Barrier:create(
+                            tonumber(result[2]),
+                            tonumber(result[3]),
+                            tonumber(result[4]),
+                            tonumber(result[5]),
+                            STRING_TO_BOOLEAN[result[6]],
+                            STRING_TO_BOOLEAN[result[7]]
+                        )
                     )
-                )
+                end
             elseif string.sub(result[1], 1, 1) == "#" then
                 -- Commented Line
                 -- continue
@@ -440,10 +472,10 @@ function myGameSetUp()
     setUpPreviewBobble()
 
     -- Four walls to prevent the balls from escaping
-    barriers[1] = Barrier:create(10, 120, false, true)
-    barriers[2] = Barrier:create(200, 230, true, false)
-    barriers[3] = Barrier:create(200, 10, true, false)
-    barriers[4] = Barrier:create(420, 10, false, false)
+    barriers[1] = Barrier:create(10, 120, 400, 20, false, true)
+    barriers[2] = Barrier:create(200, 230, 400, 20, true, false)
+    barriers[3] = Barrier:create(200, 10, 400, 20, true, false)
+    barriers[4] = Barrier:create(420, 10, 400, 20, false, false)
 
     -- We want an environment displayed behind our sprite.
     -- There are generally two ways to do this:
@@ -483,8 +515,14 @@ function myGameSetUp()
     local rowCount = {}
 
     local lineNum = 1
+
     -- Reads from levels/menu.lvl which level to load based on the selected cell
     local file = playdate.file.open("levels/menu.lvl", playdate.file.kFileRead)
+    if DEBUG then
+        -- Should be identical apart from having a malformed level section and some malformed entries
+        file = playdate.file.open("levels/menu_DEBUG.lvl", playdate.file.kFileRead)
+    end
+
     repeat
         local l = file:readline()
         if l then

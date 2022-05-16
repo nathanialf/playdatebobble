@@ -9,7 +9,7 @@ local gfx <const> = playdate.graphics
 class('Barrier').extends(playdate.graphics.sprite)
 
 -- Constructor
-function Barrier:create(x, y, isHorizontal, isSticky)
+function Barrier:create(x, y, width, height, isHorizontal, isSticky)
     local barr = Barrier()
 
     local barrierImage
@@ -29,7 +29,8 @@ function Barrier:create(x, y, isHorizontal, isSticky)
     -- Unused but just in case it ends up being used and I forget
     barr:setOpaque(true)
 
-    barr:moveTo( x, y ) 
+    barr:setSize(width, height)
+    barr:moveTo( x, y )
     barr:addSprite()
     
     -- used to tell what the object is during collisions

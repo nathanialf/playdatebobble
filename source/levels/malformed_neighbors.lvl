@@ -1,0 +1,14 @@
+# #################################
+# BOBBLES
+# #################################
+# Fine Bobble
+B 3 28 120 true
+# #################################
+# NEIGHBORS
+# #################################
+# Invalid Neighbor Format
+N 1
+# Invalid Neighbor a
+N 4 1
+# Invalid Neighbor B
+N 1 4

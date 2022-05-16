@@ -14,4 +14,5 @@ N 5 3
 N 1 4
 N 4 1
 # Barriers #######################
-R 200 30 true false
+R 200 30 50 20 true false
+R 200 210 50 20 true true

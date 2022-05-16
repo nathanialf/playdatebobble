@@ -28,15 +28,21 @@ Tutorial Screenshot
 
 Level Select Screenshot 
 
-<!--![5/3/2022 Menu Screenshot](resource/screenshots/playdate-20220503-015607.png)-->
-<!--![5/4/2022 Menu Screenshot](resource/screenshots/playdate-20220504-014448.png)-->
-![5/4/2022 Menu Screenshot](resource/screenshots/playdate-20220504-232925.png)
+<!--![5/3/2022 Level Select Screenshot](resource/screenshots/playdate-20220503-015607.png)-->
+<!--![5/4/2022 Level Select Screenshot](resource/screenshots/playdate-20220504-014448.png)-->
+![5/4/2022 Level Select Screenshot](resource/screenshots/playdate-20220504-232925.png)
+
+DEBUG Level Select Screenshot
+
+![5/16/2022 Level Select Screenshot](resource/screenshots/playdate-20220516-161915.png)
 
 In-Game Screenshot
 <!--![4/27/2022 Screenshot](resource/screenshots/playdate-20220427-233610.png)-->
 <!--![4/28/2022 Screenshot](resource/screenshots/playdate-20220428-175705.png)-->
 <!--![5/1/2022 In-Game Screenshot](resource/screenshots/playdate-20220501-222305.png)-->
 ![5/4/2022 In-Game Screenshot](resource/screenshots/playdate-20220504-012106.png)
+
+![5/16/2022 In-Game Screenshot](resource/screenshots/playdate-20220516-162048.png)
 
 Level Complete Screenshot
 
@@ -48,7 +54,7 @@ Setttings Screenshot
 
 <!--![5/14/2022 Settings Screenshot](resource/screenshots/playdate-20220514-103618.png)-->
 <!--![5/14/2022 Settings Screenshot](resource/screenshots/playdate-20220514-123010.png)-->
-![5/14/2022 Settigns Screenshot](resource/screenshots/playdate-20220514-133709.png)
+![5/14/2022 Settings Screenshot](resource/screenshots/playdate-20220514-133709.png)
 
 *(see TODO for note about SDK Assets)*
 
@@ -66,19 +72,22 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
 ### TODO
 
 #### [High Priority]
+- Fix inconsistent floating bobble removal
+  - Screenshot below of state of bobbles before all disappear
+  - White bobble is shot at the pair of white bobbles in the middle of the chain
+  - Everything on the side closer to the arrow should be the only thing to disappear
+  - All Bobbles get removed and level gets completed earlier than it should
+
+![5/16/2022 BUG Screenshot](resource/screenshots/BUG_0516_1.png)
 
 #### [Medium Priority]
 - Levels
-  - Add extra barriers in level files [ IN-PROGRESS ]
-    - Check for malformed setup of barriers in loadLevel()
-    - Add length value to barrier object
+  - Update malformed_barriers.lvl
   - Build a level editor
     - PC based, not playdate based
     - Building by hand is far too time consuming when adding all neighbor pairs
   - Add more levels
     - Tanya has some ideas for designs of levels. She will be credited if/when she designs them
-  - Add Level Unlock and display requirements for locked levels
-    - Check for malformed level unlocke requirement entries in menu.lvl
 
 #### [Low Priority]
 - Art
@@ -108,6 +117,8 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
 - Add pop-ups when you try to use menu items outside of their intended view
   - Example: "Unable to Delete Scores, please try again from Level Select" when in a level
 - Moveable level barriers?
+- Add Level Unlock and display requirements for locked levels
+  - Check for malformed level unlocke requirement entries in menu.lvl
 
 
 

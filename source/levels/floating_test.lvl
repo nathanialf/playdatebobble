@@ -2,7 +2,7 @@
 B 3 28 120 true
 B 3 44 120 false
 B 2 44 136 false
-B 1 28 28 true
+B 1 28 104 true
 B 1 44 152 false
 # Neigbors #######################
 N 1 2
@@ -11,3 +11,5 @@ N 2 3
 N 3 2
 N 3 5
 N 5 3
+N 1 4
+N 4 1

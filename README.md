@@ -66,9 +66,6 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
 ### TODO
 
 #### [High Priority]
-- Have grouped up bobbles and their "children" drop off the screen
-  - Add boolean for neighbors of poppable of a different type during setPoppableOnCollision()
-  - Set boolean to false when resetting poppables after removing in main.lua
 
 #### [Medium Priority]
 - Levels
@@ -80,7 +77,8 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
   - Add more levels
     - Tanya has some ideas for designs of levels. She will be credited if/when she designs them
   - Add Level Unlock and display requirements for locked levels
-    - Check for malformed level unlocke requirement entries in menu.lvl     
+    - Check for malformed level unlocke requirement entries in menu.lvl
+- Refactor to remove constants from a table. Doesn't seem necessary. Not sure about best practices here
 
 #### [Low Priority]
 - Art

@@ -612,7 +612,27 @@ function playdate.update()
                     table.remove(bobbles, i)
                 end
             end
+
             -- Check bobbles and neighbors for floating here
+            for i=1,#bobbles
+            do
+                --print(bobbles[i].checkIfFloating)
+                if bobbles[i].checkIfFloating and not bobbles[i].floatingChecked then
+                    bobbles[i].isFloating = bobbles[i]:getIsFloating()
+                    if bobbles[i].isFloating then
+                        bobbles[i]:setNeighborsFloating(true)
+                    end
+                end
+            end
+
+            for i=#bobbles,1,-1
+            do
+                if bobbles[i].isFloating then
+                    bobbles[i]:remove()
+                    table.remove(bobbles, i)
+                end
+            end
+
             for i=1,#bobbles
             do
                 bobbles[i].poppable = false
@@ -620,6 +640,8 @@ function playdate.update()
                 do
                     bobbles[i].neighbors[j].poppable = false
                     -- Set value for checking if floating to false here
+                    bobbles[i].neighbors[j].floatingChecked = false
+                    bobbles[i].neighbors[j].isFloating = false
                 end
             end
         else
@@ -630,6 +652,8 @@ function playdate.update()
                 do
                     bobbles[i].neighbors[j].poppable = false
                     -- Set value for checking if floating to false here
+                    bobbles[i].neighbors[j].floatingChecked = false
+                    bobbles[i].neighbors[j].isFloating = false
                 end
             end 
         end

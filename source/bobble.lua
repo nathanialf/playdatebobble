@@ -74,8 +74,6 @@ function Bobble:createSprite(type)
     -- sets if we can should try to pop the bobble
     self.poppable = false
     
-    -- True if it should check for floating bobbles
-    self.checkIfFloating = false
     -- true if it there isnt any bobbles in the group attachedToWall
     self.isFloating = false
     -- True if we have already checked it for floating
@@ -94,9 +92,6 @@ function Bobble:setPoppableOnCollision()
         if self.neighbors[i] ~= nil then
             if not self.neighbors[i].poppable and self.neighbors[i].type == self.type then
                 self.neighbors[i]:setPoppableOnCollision()
-            elseif not self.neighbors[i].poppable and self.neighbors[i].type ~= self.type and not self.attachedToWall then
-                -- Set a variable here for checking for floating
-                self.neighbors[i].checkIfFloating = true
             end
         end
     end
@@ -104,31 +99,24 @@ end
 
 function Bobble:getIsFloating()
     self.floatingChecked = true
+
     if self.attachedToWall then
         return false
     end
-    local neighborAttached = true
-    for j=1,#self.neighbors
+
+    local currentFloating
+
+    for i=1, #self.neighbors
     do
-        if not self.neighbors[j].floatingChecked then
-            currentFloating = self.neighbors[j]:getIsFloating()
+        if not self.neighbors[i].floatingChecked then
+            currentFloating = self.neighbors[i]:getIsFloating()
             if not currentFloating then
-                neighborAttached = currentFloating
+                return false
             end
         end
     end
-    return neighborAttached
-end
 
--- Sets neighbors to floating
-function Bobble:setNeighborsFloating(floating)
-    self.isFloating = floating
-    for j=1,#self.neighbors
-    do
-        if not self.neighbors[j].isFloating then
-            self.neighbors[j]:setNeighborsFloating(floating)
-        end
-    end
+    return true
 end
 
 function Bobble:move(deltaTime)

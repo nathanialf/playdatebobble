@@ -1,0 +1,19 @@
+# #################################
+# BOBBLES
+# #################################
+# Fine Bobble
+B 3 28 120 true
+# #################################
+# BARRIERS # TODO
+# #################################
+# X too small
+R 10 40 20 20 true false
+# X too big
+R 1000 40 20 20 true false
+# Y too small
+R 40 10 20 20 false true
+# Y too big
+R 40 1000 20 20 false true
+# Invalid form
+R 40 50 false true 20 20
+R 40 60 30 20 false

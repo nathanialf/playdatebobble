@@ -444,9 +444,11 @@ end
 
 -- Updates the high scores in the table and saves to the datastore
 function updateHighScore(currentLevel, shotsFired)
-    if scores[currentLevel] == nil or shotsFired < scores[currentLevel] then
-        scores[currentLevel] = shotsFired
-        playdate.datastore.write(scores)
+    if shotsFired > 0 then
+        if scores[currentLevel] == nil or shotsFired < scores[currentLevel] then
+            scores[currentLevel] = shotsFired
+            playdate.datastore.write(scores)
+        end
     end
 end
 
@@ -677,12 +679,10 @@ function playdate.update()
             -- Check bobbles and neighbors for floating here
             for i=1,#bobbles
             do
-                --print(bobbles[i].checkIfFloating)
-                if bobbles[i].checkIfFloating and not bobbles[i].floatingChecked then
-                    bobbles[i].isFloating = bobbles[i]:getIsFloating()
-                    if bobbles[i].isFloating then
-                        bobbles[i]:setNeighborsFloating(true)
-                    end
+                bobbles[i].isFloating = bobbles[i]:getIsFloating()
+                for j=1, #bobbles
+                do
+                    bobbles[j].floatingChecked = false
                 end
             end
 
@@ -700,9 +700,6 @@ function playdate.update()
                 for j=1,#bobbles[i].neighbors
                 do
                     bobbles[i].neighbors[j].poppable = false
-                    -- Set value for checking if floating to false here
-                    bobbles[i].neighbors[j].floatingChecked = false
-                    bobbles[i].neighbors[j].isFloating = false
                 end
             end
         else
@@ -712,9 +709,6 @@ function playdate.update()
                 for j=1,#bobbles[i].neighbors
                 do
                     bobbles[i].neighbors[j].poppable = false
-                    -- Set value for checking if floating to false here
-                    bobbles[i].neighbors[j].floatingChecked = false
-                    bobbles[i].neighbors[j].isFloating = false
                 end
             end 
         end

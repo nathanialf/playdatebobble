@@ -72,17 +72,9 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
 ### TODO
 
 #### [High Priority]
-- Fix inconsistent floating bobble removal
-  - Screenshot below of state of bobbles before all disappear
-  - White bobble is shot at the pair of white bobbles in the middle of the chain
-  - Everything on the side closer to the arrow should be the only thing to disappear
-  - All Bobbles get removed and level gets completed earlier than it should
-
-![5/16/2022 BUG Screenshot](resource/screenshots/BUG_0516_1.png)
 
 #### [Medium Priority]
 - Levels
-  - Update malformed_barriers.lvl
   - Build a level editor
     - PC based, not playdate based
     - Building by hand is far too time consuming when adding all neighbor pairs
@@ -118,7 +110,7 @@ Fun fact: Running the pdx file in the simulator from a network share does NOT wo
   - Example: "Unable to Delete Scores, please try again from Level Select" when in a level
 - Moveable level barriers?
 - Add Level Unlock and display requirements for locked levels
-  - Check for malformed level unlocke requirement entries in menu.lvl
+  - Check for malformed level unlock requirement entries in menu.lvl
 
 
 

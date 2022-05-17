@@ -1,7 +1,7 @@
 # Test Levels 
 # Will be removed when other levels are here
-1 1 1 levels/test_easy.lvl
-1 1 2 levels/test.lvl
-1 1 3 levels/test_floating.lvl
-1 1 4 levels/test_barrier.lvl
+1 1 1 levels/test/test_easy.lvl
+1 1 2 levels/test/test.lvl
+1 1 3 levels/test/test_floating.lvl
+1 1 4 levels/test/test_barrier.lvl
 # Main Levels TODO

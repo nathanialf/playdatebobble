@@ -1,7 +1,7 @@
 name=playdatebobble
-author=nathanialfine
-description=Making a test game
+author=Nathanial Fine
+description=Puzzle Bobble-like game for Playdate
 bundleID=com.defnf.playdatebobble
-version=0.1.1
+version=0.1.2
 buildnumber=1
 imagePath=images
